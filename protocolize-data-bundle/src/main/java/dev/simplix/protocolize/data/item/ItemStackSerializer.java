@@ -181,10 +181,9 @@ public final class ItemStackSerializer {
         try {
             int protocolId;
             short durability = 0;
-            ProtocolIdMapping mapping;
+            ProtocolIdMapping mapping = null;
             if (stack.itemType() == null) {
-                buf.writeShort(-1);
-                return;
+                protocolId = -1;
             } else {
                 mapping = MAPPING_PROVIDER.mapping(stack.itemType(), protocolVersion);
                 if (mapping == null) {
@@ -197,14 +196,24 @@ public final class ItemStackSerializer {
                 }
             }
             if (protocolId == -2) {
-                buf.writeShort(-1);
+                if (protocolVersion < MINECRAFT_1_13_2) {
+                    buf.writeShort(-1);
+                } else {
+                    buf.writeBoolean(false);
+                }
                 log.warn(stack.itemType().name() + " cannot be used on protocol version " + protocolVersion);
                 return;
             }
             if (protocolVersion < MINECRAFT_1_13_2) {
                 buf.writeShort(protocolId);
+                if (protocolId == -1) {
+                    return;
+                }
             } else {
                 buf.writeBoolean(protocolId != -1);
+                if (protocolId == -1) {
+                    return;
+                }
                 ProtocolUtil.writeVarInt(buf, protocolId);
             }
             buf.writeByte(stack.amount());

@@ -3,11 +3,14 @@ package dev.simplix.protocolize.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.Protocol;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.module.ProtocolizeModule;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.providers.ProtocolRegistrationProvider;
 import dev.simplix.protocolize.api.util.ProtocolVersions;
+import dev.simplix.protocolize.data.packets.*;
 import dev.simplix.protocolize.data.registries.Registries;
 import dev.simplix.protocolize.data.registries.RegistryEntry;
 import dev.simplix.protocolize.data.registries.SoundRegistry;
@@ -88,8 +91,16 @@ public class DataModule implements ProtocolizeModule {
     }
 
     @Override
-    public void registerPackets(ProtocolRegistrationProvider protocolRegistrationProvider) {
+    public void registerPackets(ProtocolRegistrationProvider registrationProvider) {
+        // CLIENTBOUND
+        registrationProvider.registerPacket(WindowItems.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, WindowItems.class);
+        registrationProvider.registerPacket(SetSlot.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SetSlot.class);
+        registrationProvider.registerPacket(HeldItemChange.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, HeldItemChange.class);
 
+        // SERVERBOUND
+        registrationProvider.registerPacket(UseItem.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, UseItem.class);
+        registrationProvider.registerPacket(HeldItemChange.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, HeldItemChange.class);
+        registrationProvider.registerPacket(BlockPlacement.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, BlockPlacement.class);
     }
 
 }

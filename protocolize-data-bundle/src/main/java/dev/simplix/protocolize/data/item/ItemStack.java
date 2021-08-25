@@ -56,6 +56,8 @@ public class ItemStack {
 
     public ItemStack(ItemType itemType, int amount, short durability) {
         this.itemType = itemType;
+        this.amount = (byte) amount;
+        this.durability = durability;
     }
 
     public boolean flagSet(ItemFlag flag) {
