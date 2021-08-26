@@ -7,6 +7,7 @@ import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.item.ItemStack;
 import dev.simplix.protocolize.data.item.ItemStackSerializer;
+import dev.simplix.protocolize.data.util.LazyBuffer;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -42,8 +43,13 @@ public class WindowItems extends AbstractPacket {
             AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_17_1, 0x14)
     );
 
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private LazyBuffer lazyBuffer;
+
     private short windowId;
     private List<ItemStack> items = new ArrayList<>();
+    private int count;
 
     /**
      * @since Protocol 756
@@ -58,19 +64,23 @@ public class WindowItems extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         windowId = buf.readUnsignedByte();
-        int count;
         if (protocolVersion >= MINECRAFT_1_17_1) {
             stateId = ProtocolUtil.readVarInt(buf);
             count = ProtocolUtil.readVarInt(buf);
         } else {
             count = buf.readShort();
         }
-        for (int i = 0; i < count; i++) {
-            items.add(ItemStackSerializer.read(buf, protocolVersion));
-        }
-        if (protocolVersion >= MINECRAFT_1_17_1) {
-            cursorItem = ItemStackSerializer.read(buf, protocolVersion);
-        }
+
+        byte[] data = new byte[buf.readableBytes()];
+        buf.readBytes(data);
+        lazyBuffer = new LazyBuffer(data, (wrappedBuf) -> {
+            for (int i = 0; i < count; i++) {
+                items.add(ItemStackSerializer.read(wrappedBuf, protocolVersion));
+            }
+            if (protocolVersion >= MINECRAFT_1_17_1) {
+                cursorItem = ItemStackSerializer.read(wrappedBuf, protocolVersion);
+            }
+        });
     }
 
     @Override
@@ -78,18 +88,33 @@ public class WindowItems extends AbstractPacket {
         buf.writeByte(windowId & 0xFF);
         if (protocolVersion >= MINECRAFT_1_17_1) {
             ProtocolUtil.writeVarInt(buf, stateId);
-            ProtocolUtil.writeVarInt(buf, items.size());
+            ProtocolUtil.writeVarInt(buf, count);
         } else {
-            buf.writeShort(items.size());
+            buf.writeShort(count);
         }
-        for (ItemStack item : items) {
-            if (item == null)
-                item = ItemStack.NO_DATA;
-            ItemStackSerializer.write(buf, item, protocolVersion);
-        }
-        if (protocolVersion >= MINECRAFT_1_17_1) {
-            ItemStackSerializer.write(buf, cursorItem, protocolVersion);
-        }
+        lazyBuffer.write(buf, () -> {
+            for (ItemStack item : items) {
+                if (item == null)
+                    item = ItemStack.NO_DATA;
+                ItemStackSerializer.write(buf, item, protocolVersion);
+            }
+            if (protocolVersion >= MINECRAFT_1_17_1) {
+                ItemStackSerializer.write(buf, cursorItem, protocolVersion);
+            }
+        });
+    }
+
+    public List<ItemStack> items() {
+        lazyBuffer.read();
+        return items;
+    }
+
+    /**
+     * @since Protocol 756
+     */
+    public ItemStack cursorItem() {
+        lazyBuffer.read();
+        return cursorItem;
     }
 
 }

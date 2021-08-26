@@ -47,7 +47,7 @@ public class ItemStack {
     private int hideFlags;
 
     public ItemStack(ItemType itemType) {
-        this(itemType, 0);
+        this(itemType, 1);
     }
 
     public ItemStack(ItemType itemType, int amount) {

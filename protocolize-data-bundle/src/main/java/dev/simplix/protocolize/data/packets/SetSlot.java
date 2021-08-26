@@ -7,6 +7,7 @@ import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.item.ItemStack;
 import dev.simplix.protocolize.data.item.ItemStackSerializer;
+import dev.simplix.protocolize.data.util.LazyBuffer;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -24,7 +25,6 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
@@ -41,6 +41,10 @@ public class SetSlot extends AbstractPacket {
             AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_17_1, 0x16)
     );
 
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private LazyBuffer lazyBuffer = LazyBuffer.empty();
+
     private byte windowId;
     private short slot;
     private ItemStack itemStack = ItemStack.NO_DATA;
@@ -50,6 +54,13 @@ public class SetSlot extends AbstractPacket {
      */
     private int stateId;
 
+    public SetSlot(byte windowId, short slot, ItemStack itemStack, int stateId) {
+        this.windowId = windowId;
+        this.slot = slot;
+        this.itemStack = itemStack;
+        this.stateId = stateId;
+    }
+
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         windowId = buf.readByte();
@@ -57,7 +68,12 @@ public class SetSlot extends AbstractPacket {
             stateId = ProtocolUtil.readVarInt(buf);
         }
         slot = buf.readShort();
-        itemStack = ItemStackSerializer.read(buf, protocolVersion);
+
+        byte[] data = new byte[buf.readableBytes()];
+        buf.readBytes(data);
+        lazyBuffer = new LazyBuffer(data, byteBuf -> {
+            itemStack = ItemStackSerializer.read(byteBuf, protocolVersion);
+        });
     }
 
     @Override
@@ -67,7 +83,13 @@ public class SetSlot extends AbstractPacket {
             ProtocolUtil.writeVarInt(buf, stateId);
         }
         buf.writeShort(slot);
-        ItemStackSerializer.write(buf, itemStack, protocolVersion);
+        lazyBuffer.write(buf, () -> {
+            ItemStackSerializer.write(buf, itemStack, protocolVersion);
+        });
     }
 
+    public ItemStack itemStack() {
+        lazyBuffer.read();
+        return itemStack;
+    }
 }
