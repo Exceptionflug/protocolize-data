@@ -1,6 +1,6 @@
 package dev.simplix.protocolize.data.mapping;
 
-import dev.simplix.protocolize.data.item.ItemStack;
+import dev.simplix.protocolize.api.item.ItemStack;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 

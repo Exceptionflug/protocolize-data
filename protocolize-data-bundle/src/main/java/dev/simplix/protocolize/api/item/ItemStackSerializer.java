@@ -1,4 +1,4 @@
-package dev.simplix.protocolize.data.item;
+package dev.simplix.protocolize.api.item;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Multimap;

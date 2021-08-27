@@ -5,6 +5,8 @@ import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +18,13 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
  *
  * @author Exceptionflug
  */
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Accessors(fluent = true)
 public class CloseWindow extends AbstractPacket {
 
     public static final List<ProtocolIdMapping> CLIENTBOUND_MAPPINGS = Arrays.asList(

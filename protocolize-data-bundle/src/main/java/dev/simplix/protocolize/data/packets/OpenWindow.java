@@ -25,6 +25,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
 public class OpenWindow extends AbstractPacket {

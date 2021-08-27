@@ -2,12 +2,12 @@ package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.ClickType;
 import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.item.ItemStack;
+import dev.simplix.protocolize.api.item.ItemStackSerializer;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
-import dev.simplix.protocolize.data.item.ItemStack;
-import dev.simplix.protocolize.data.item.ItemStackSerializer;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -27,6 +27,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)

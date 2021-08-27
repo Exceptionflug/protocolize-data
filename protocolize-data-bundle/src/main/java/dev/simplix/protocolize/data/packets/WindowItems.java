@@ -1,12 +1,12 @@
 package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.item.ItemStack;
+import dev.simplix.protocolize.api.item.ItemStackSerializer;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
-import dev.simplix.protocolize.data.item.ItemStack;
-import dev.simplix.protocolize.data.item.ItemStackSerializer;
 import dev.simplix.protocolize.data.util.LazyBuffer;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
@@ -26,7 +26,6 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
@@ -60,6 +59,12 @@ public class WindowItems extends AbstractPacket {
      * @since Protocol 756
      */
     private int stateId;
+
+    public WindowItems(short windowId, List<ItemStack> items, int stateId) {
+        this.windowId = windowId;
+        this.items = items;
+        this.stateId = stateId;
+    }
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {

@@ -1,8 +1,8 @@
 package dev.simplix.protocolize.data.mapping;
 
+import dev.simplix.protocolize.api.item.ItemStack;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
-import dev.simplix.protocolize.data.item.ItemStack;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
