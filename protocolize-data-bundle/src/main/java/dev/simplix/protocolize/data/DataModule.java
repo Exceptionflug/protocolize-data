@@ -3,11 +3,15 @@ package dev.simplix.protocolize.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import dev.simplix.protocolize.api.Direction;
 import dev.simplix.protocolize.api.PacketDirection;
 import dev.simplix.protocolize.api.Protocol;
+import dev.simplix.protocolize.api.Protocolize;
+import dev.simplix.protocolize.api.item.listeners.*;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.module.ProtocolizeModule;
 import dev.simplix.protocolize.api.providers.MappingProvider;
+import dev.simplix.protocolize.api.providers.PacketListenerProvider;
 import dev.simplix.protocolize.api.providers.ProtocolRegistrationProvider;
 import dev.simplix.protocolize.api.util.ProtocolVersions;
 import dev.simplix.protocolize.data.packets.*;
@@ -82,8 +86,7 @@ public class DataModule implements ProtocolizeModule {
             String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase();
             try {
                 Sound sound = Sound.valueOf(name);
-                int id = registry.entries().get(type).protocolId();
-                provider.registerMapping(sound, AbstractProtocolMapping.rangedIdMapping(i, i, id));
+                provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
             } catch (IllegalArgumentException e) {
                 log.warn("Don't know what sound " + name + " was at protocol " + i);
             }
@@ -107,7 +110,18 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerPacket(BlockPlacement.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, BlockPlacement.class);
         registrationProvider.registerPacket(ConfirmTransaction.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ConfirmTransaction.class);
         registrationProvider.registerPacket(ClickWindow.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ClickWindow.class);
-        registrationProvider.registerPacket(CloseWindow.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, CloseWindow.class);
+        registrationProvider.registerPacket(CloseWindow.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, CloseWindow.class);
+        registrationProvider.registerPacket(PlayerPosition.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPosition.class);
+        registrationProvider.registerPacket(PlayerPositionLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPositionLook.class);
+        registrationProvider.registerPacket(PlayerLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerLook.class);
+
+        PacketListenerProvider listenerProvider = Protocolize.listenerProvider();
+        listenerProvider.registerListener(new CloseWindowListener(Direction.UPSTREAM));
+        listenerProvider.registerListener(new CloseWindowListener(Direction.DOWNSTREAM));
+        listenerProvider.registerListener(new ClickWindowListener());
+        listenerProvider.registerListener(new PlayerPositionListener());
+        listenerProvider.registerListener(new PlayerPositionLookListener());
+        listenerProvider.registerListener(new PlayerLookListener());
     }
 
 }

@@ -44,7 +44,7 @@ public class WindowItems extends AbstractPacket {
 
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private LazyBuffer lazyBuffer;
+    private LazyBuffer lazyBuffer = LazyBuffer.empty();
 
     private short windowId;
     private List<ItemStack> items = new ArrayList<>();
@@ -63,6 +63,7 @@ public class WindowItems extends AbstractPacket {
     public WindowItems(short windowId, List<ItemStack> items, int stateId) {
         this.windowId = windowId;
         this.items = items;
+        this.count = items.size();
         this.stateId = stateId;
     }
 
@@ -112,6 +113,11 @@ public class WindowItems extends AbstractPacket {
     public List<ItemStack> items() {
         lazyBuffer.read();
         return items;
+    }
+
+    public void items(List<ItemStack> items) {
+        this.items = items;
+        this.count = items.size();
     }
 
     /**
