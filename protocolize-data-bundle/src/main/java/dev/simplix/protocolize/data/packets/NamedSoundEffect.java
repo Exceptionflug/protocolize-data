@@ -60,7 +60,12 @@ public class NamedSoundEffect extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection direction, int protocolVersion) {
-        sound = lookupSound(ProtocolUtil.readString(buf), protocolVersion);
+        String id = ProtocolUtil.readString(buf);
+        sound = lookupSound(id, protocolVersion);
+        if (sound == null) {
+            log.warn("Don't know what sound " + id + " at protocol " + protocolVersion + " should be.");
+            return;
+        }
         if (protocolVersion > MINECRAFT_1_8)
             category = SoundCategory.values()[ProtocolUtil.readVarInt(buf)];
         x = buf.readInt() / 8D;
@@ -78,7 +83,7 @@ public class NamedSoundEffect extends AbstractPacket {
     public void write(ByteBuf buf, PacketDirection direction, int protocolVersion) {
         ProtocolMapping mapping = MAPPING_PROVIDER.mapping(sound, protocolVersion);
         if (mapping == null) {
-            log.warn("Don't know what sound " + ((ProtocolStringMapping) mapping).id() + " at protocol " + protocolVersion + " should be.");
+            log.warn("Don't know what sound " + sound.name() + " at protocol " + protocolVersion + " should be.");
             return;
         }
         ProtocolUtil.writeString(buf, ((ProtocolStringMapping) mapping).id());
@@ -99,7 +104,7 @@ public class NamedSoundEffect extends AbstractPacket {
         Multimap<Sound, ProtocolMapping> mappings = MAPPING_PROVIDER.mappings(Sound.class, protocolVersion);
         for (Sound sound : mappings.keySet()) {
             for (ProtocolMapping mapping : mappings.get(sound)) {
-                if (mapping instanceof ProtocolIdMapping) {
+                if (mapping instanceof ProtocolStringMapping) {
                     if (((ProtocolStringMapping) mapping).id().equals(id)) {
                         return sound;
                     }

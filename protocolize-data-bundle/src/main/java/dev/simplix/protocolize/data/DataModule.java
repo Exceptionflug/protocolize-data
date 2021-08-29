@@ -103,6 +103,7 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerPacket(OpenWindow.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, OpenWindow.class);
         registrationProvider.registerPacket(ConfirmTransaction.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ConfirmTransaction.class);
         registrationProvider.registerPacket(CloseWindow.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, CloseWindow.class);
+        registrationProvider.registerPacket(NamedSoundEffect.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, NamedSoundEffect.class);
 
         // SERVERBOUND
         registrationProvider.registerPacket(UseItem.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, UseItem.class);
