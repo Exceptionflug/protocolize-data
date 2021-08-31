@@ -116,6 +116,7 @@ public class WindowItems extends AbstractPacket {
     }
 
     public void items(List<ItemStack> items) {
+        this.lazyBuffer = LazyBuffer.empty();
         this.items = items;
         this.count = items.size();
     }

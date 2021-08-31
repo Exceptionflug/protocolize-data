@@ -92,4 +92,11 @@ public class SetSlot extends AbstractPacket {
         lazyBuffer.read();
         return itemStack;
     }
+
+    public SetSlot itemStack(ItemStack stack) {
+        this.lazyBuffer = LazyBuffer.empty();
+        this.itemStack = stack;
+        return this;
+    }
+
 }
