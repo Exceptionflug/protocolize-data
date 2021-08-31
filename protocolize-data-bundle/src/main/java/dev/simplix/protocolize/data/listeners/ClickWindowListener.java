@@ -1,4 +1,4 @@
-package dev.simplix.protocolize.api.item.listeners;
+package dev.simplix.protocolize.data.listeners;
 
 import dev.simplix.protocolize.api.ClickType;
 import dev.simplix.protocolize.api.Direction;
