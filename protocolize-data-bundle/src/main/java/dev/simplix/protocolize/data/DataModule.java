@@ -52,7 +52,7 @@ public class DataModule implements ProtocolizeModule {
             registerItemMappings(registries.itemRegistry().entries(), provider, i);
             registerSoundMappings(registries.soundRegistry(), provider, i);
         } catch (Exception e) {
-            log.error("Unable to register mappings for protocol version "+i, e);
+            log.error("Unable to register mappings for protocol version " + i, e);
         }
     }
 
@@ -61,10 +61,11 @@ public class DataModule implements ProtocolizeModule {
             if (stream == null) {
                 return;
             }
-            Map<String, RegistryEntry> legacy = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), new TypeToken<Map<String, RegistryEntry>>(){}.getType());
+            Map<String, RegistryEntry> legacy = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), new TypeToken<Map<String, RegistryEntry>>() {
+            }.getType());
             registerItemMappings(legacy, provider, i);
         } catch (Exception e) {
-            log.error("Unable to register mappings for protocol version "+i, e);
+            log.error("Unable to register mappings for protocol version " + i, e);
         }
     }
 

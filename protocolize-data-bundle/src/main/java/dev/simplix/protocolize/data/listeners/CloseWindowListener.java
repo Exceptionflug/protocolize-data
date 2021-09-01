@@ -30,7 +30,7 @@ public final class CloseWindowListener extends AbstractPacketListener<CloseWindo
         }
         event.player().registerInventory(event.packet().windowId(), null);
         inventory.closeConsumers().forEach(consumer -> consumer.accept(new InventoryClose(event.player(), inventory,
-                null, event.packet().windowId())));
+            null, event.packet().windowId())));
     }
 
     @Override

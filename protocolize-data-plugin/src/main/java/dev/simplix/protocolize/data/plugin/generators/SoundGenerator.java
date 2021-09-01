@@ -24,10 +24,10 @@ public class SoundGenerator implements Generator {
     @Override
     public void generate(Registries registries) throws Exception {
         new ByteBuddy().makeEnumeration(registries.soundRegistry().entries().keySet()
-                        .stream().map(s -> s.substring("minecraft:".length()).replace(".", "_").toUpperCase()).collect(Collectors.toList()))
-                .name("dev.simplix.protocolize.data.Sound")
-                .make()
-                .saveIn(target);
+                .stream().map(s -> s.substring("minecraft:".length()).replace(".", "_").toUpperCase()).collect(Collectors.toList()))
+            .name("dev.simplix.protocolize.data.Sound")
+            .make()
+            .saveIn(target);
     }
 
 }

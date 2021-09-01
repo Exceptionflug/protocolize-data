@@ -24,10 +24,10 @@ public class ItemTypeGenerator implements Generator {
     @Override
     public void generate(Registries registries) throws Exception {
         new ByteBuddy().makeEnumeration(registries.itemRegistry().entries().keySet()
-                        .stream().map(s -> s.substring("minecraft:".length()).toUpperCase()).collect(Collectors.toList()))
-                .name("dev.simplix.protocolize.data.ItemType")
-                .make()
-                .saveIn(target);
+                .stream().map(s -> s.substring("minecraft:".length()).toUpperCase()).collect(Collectors.toList()))
+            .name("dev.simplix.protocolize.data.ItemType")
+            .make()
+            .saveIn(target);
     }
 
 }

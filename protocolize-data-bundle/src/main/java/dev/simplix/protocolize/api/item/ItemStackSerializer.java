@@ -35,9 +35,10 @@ public final class ItemStackSerializer {
 
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
     private static final ComponentConverter CONVERTER = Protocolize.getService(ComponentConverterProvider.class)
-            .platformConverter();
+        .platformConverter();
 
-    private ItemStackSerializer() {}
+    private ItemStackSerializer() {
+    }
 
     // READ
 

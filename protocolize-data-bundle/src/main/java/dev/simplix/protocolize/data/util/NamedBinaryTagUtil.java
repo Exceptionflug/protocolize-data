@@ -18,7 +18,8 @@ import java.io.IOException;
  */
 public final class NamedBinaryTagUtil {
 
-    private NamedBinaryTagUtil() {}
+    private NamedBinaryTagUtil() {
+    }
 
     public static NamedTag readTag(ByteBuf byteBuf) throws IOException {
         Preconditions.checkNotNull(byteBuf, "ByteBuf cannot be null");

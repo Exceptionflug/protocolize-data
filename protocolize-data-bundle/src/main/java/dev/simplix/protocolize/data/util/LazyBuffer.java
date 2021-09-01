@@ -3,7 +3,6 @@ package dev.simplix.protocolize.data.util;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -23,7 +22,8 @@ public class LazyBuffer {
     }
 
     public static LazyBuffer empty() {
-        LazyBuffer lazyBuffer = new LazyBuffer(new byte[0], byteBuf -> {});
+        LazyBuffer lazyBuffer = new LazyBuffer(new byte[0], byteBuf -> {
+        });
         lazyBuffer.read = true;
         return lazyBuffer;
     }

@@ -30,8 +30,8 @@ public class ProtocolizeDataMojo extends AbstractMojo {
     private static final Gson GSON = new Gson();
 
     private final List<Generator> generators = Arrays.asList(
-            new ItemTypeGenerator(CLASSES_DIR),
-            new SoundGenerator(CLASSES_DIR)
+        new ItemTypeGenerator(CLASSES_DIR),
+        new SoundGenerator(CLASSES_DIR)
     );
 
     @SneakyThrows
@@ -42,7 +42,7 @@ public class ProtocolizeDataMojo extends AbstractMojo {
             long now = System.currentTimeMillis();
             getLog().info("Running " + generator.getClass().getName() + "...");
             generator.generate(latestRegistries);
-            getLog().info("Running " + generator.getClass().getName() + " done (" + (System.currentTimeMillis() - now) +" ms)");
+            getLog().info("Running " + generator.getClass().getName() + " done (" + (System.currentTimeMillis() - now) + " ms)");
         }
     }
 

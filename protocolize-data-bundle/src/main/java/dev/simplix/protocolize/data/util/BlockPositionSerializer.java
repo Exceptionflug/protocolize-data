@@ -12,7 +12,8 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_14;
  */
 public final class BlockPositionSerializer {
 
-    private BlockPositionSerializer() {}
+    private BlockPositionSerializer() {
+    }
 
     public static BlockPosition read(ByteBuf byteBuf, int protocolVersion) {
         long val = byteBuf.readLong();

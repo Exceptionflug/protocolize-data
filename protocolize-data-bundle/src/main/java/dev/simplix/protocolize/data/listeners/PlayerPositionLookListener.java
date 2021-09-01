@@ -5,7 +5,6 @@ import dev.simplix.protocolize.api.listener.AbstractPacketListener;
 import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
 import dev.simplix.protocolize.api.player.ProtocolizePlayer;
-import dev.simplix.protocolize.data.packets.PlayerPosition;
 import dev.simplix.protocolize.data.packets.PlayerPositionLook;
 
 /**
