@@ -21,7 +21,7 @@ public final class CloseWindowListener extends AbstractPacketListener<CloseWindo
 
     @Override
     public void packetReceive(PacketReceiveEvent<CloseWindow> event) {
-        if (event.packet() == null) {
+        if (event.player() == null) {
             return;
         }
         Inventory inventory = event.player().registeredInventories().get(event.packet().windowId());
