@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -71,7 +72,7 @@ public class DataModule implements ProtocolizeModule {
 
     private void registerItemMappings(Map<String, RegistryEntry> entries, MappingProvider provider, int i) {
         for (String type : entries.keySet()) {
-            String name = type.substring("minecraft:".length()).toUpperCase();
+            String name = type.substring("minecraft:".length()).toUpperCase(Locale.ROOT);
             try {
                 ItemType itemType = ItemType.valueOf(name);
                 int id = entries.get(type).protocolId();
@@ -84,7 +85,7 @@ public class DataModule implements ProtocolizeModule {
 
     private void registerSoundMappings(SoundRegistry registry, MappingProvider provider, int i) {
         for (String type : registry.entries().keySet()) {
-            String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase();
+            String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
             try {
                 Sound sound = Sound.valueOf(name);
                 provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));

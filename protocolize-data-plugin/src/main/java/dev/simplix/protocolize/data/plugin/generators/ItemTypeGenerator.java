@@ -6,6 +6,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.ClassFileVersion;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +26,7 @@ public class ItemTypeGenerator implements Generator {
     @Override
     public void generate(Registries registries) throws Exception {
         new ByteBuddy(ClassFileVersion.JAVA_V8).makeEnumeration(registries.itemRegistry().entries().keySet()
-                .stream().map(s -> s.substring("minecraft:".length()).toUpperCase()).collect(Collectors.toList()))
+                .stream().map(s -> s.substring("minecraft:".length()).toUpperCase(Locale.ROOT)).collect(Collectors.toList()))
             .name("dev.simplix.protocolize.data.ItemType")
             .make()
             .saveIn(target);
