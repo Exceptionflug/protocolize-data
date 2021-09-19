@@ -63,26 +63,27 @@ public final class ClickWindowListener extends AbstractPacketListener<ClickWindo
             event.markForRewrite();
         }
         ClickType clickType = click.clickType();
-        if (click.cancelled()) {
-            event.cancelled(true);
-            if (inventory.type() != InventoryType.PLAYER) {
-                event.player().openInventory(inventory);
-            } else {
-                event.player().proxyInventory().update();
+        event.cancelled(true);
+        if (event.player().registeredInventories().get(clickWindow.windowId()) == null) {
+            return; // Inv maybe closed during click handle
+        }
+        if (inventory.type() != InventoryType.PLAYER) {
+            event.player().openInventory(inventory);
+        } else {
+            event.player().proxyInventory().update();
+        }
+        if (clickType.name().startsWith("NUMBER_BUTTON")) {
+            if (event.player().protocolVersion() < MINECRAFT_1_17) {
+                event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
             }
-            if (clickType.name().startsWith("NUMBER_BUTTON")) {
-                if (event.player().protocolVersion() < MINECRAFT_1_17) {
-                    event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
-                }
-                event.player().sendPacket(new SetSlot((byte) 0, (short) (clickType.button() + 36), ItemStack.NO_DATA, 0));
-            } else if (clickType.name().startsWith("SHIFT_")) {
-                if (event.player().protocolVersion() < MINECRAFT_1_17) {
-                    event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
-                }
-                event.player().sendPacket(new SetSlot((byte) 0, (short) 44, ItemStack.NO_DATA, 0));
-            } else {
-                event.player().sendPacket(new SetSlot((byte) -1, (short) -1, ItemStack.NO_DATA, 0));
+            event.player().sendPacket(new SetSlot((byte) 0, (short) (clickType.button() + 36), ItemStack.NO_DATA, 0));
+        } else if (clickType.name().startsWith("SHIFT_")) {
+            if (event.player().protocolVersion() < MINECRAFT_1_17) {
+                event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
             }
+            event.player().sendPacket(new SetSlot((byte) 0, (short) 44, ItemStack.NO_DATA, 0));
+        } else {
+            event.player().sendPacket(new SetSlot((byte) -1, (short) -1, ItemStack.NO_DATA, 0));
         }
     }
 
