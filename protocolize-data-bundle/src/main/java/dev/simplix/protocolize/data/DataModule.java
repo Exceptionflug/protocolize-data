@@ -97,6 +97,9 @@ public class DataModule implements ProtocolizeModule {
 
     @Override
     public void registerPackets(ProtocolRegistrationProvider registrationProvider) {
+        if (registrationProvider == null) {
+            return;
+        }
         // CLIENTBOUND
         registrationProvider.registerPacket(WindowItems.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, WindowItems.class);
         registrationProvider.registerPacket(SetSlot.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SetSlot.class);
