@@ -8,6 +8,7 @@ import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.ComponentConverterProvider;
 import dev.simplix.protocolize.api.providers.MappingProvider;
+import dev.simplix.protocolize.api.util.DebugUtil;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.ItemType;
 import dev.simplix.protocolize.data.mapping.AbstractLegacyItemNBTProtocolIdMapping;
@@ -83,6 +84,7 @@ public final class ItemStackSerializer {
             out.hideFlags(readHideFlags(tag));
             return out;
         } catch (Exception e) {
+            DebugUtil.writeDump(buf, e);
             log.error("Unable to read item stack from buffer in protocol version " + protocolVersion, e);
             return ItemStack.NO_DATA;
         }
