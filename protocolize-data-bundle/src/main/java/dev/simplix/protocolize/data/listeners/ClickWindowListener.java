@@ -54,7 +54,7 @@ public final class ClickWindowListener extends AbstractPacketListener<ClickWindo
             clickWindow.windowId(click.windowId());
             event.markForRewrite();
         }
-        if (clickWindow.clickType() != click.clickType()) {
+        if (clickWindow.clickType() != click.clickType() && click.clickType() != null) {
             clickWindow.clickType(click.clickType());
             event.markForRewrite();
         }

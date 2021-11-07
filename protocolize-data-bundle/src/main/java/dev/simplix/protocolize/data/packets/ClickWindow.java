@@ -11,6 +11,7 @@ import dev.simplix.protocolize.api.util.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
  *
  * @author Exceptionflug
  */
+@Slf4j
 @Getter
 @Setter
 @ToString
@@ -79,6 +81,9 @@ public class ClickWindow extends AbstractPacket {
             }
         }
         clickType = ClickType.getType(mode, button);
+        if (clickType == null) {
+            log.warn("Unsupported click type with mode " + mode + " and button " + button + "! Protocol " + protocolVersion);
+        }
         itemStack = ItemStackSerializer.read(buf, protocolVersion);
     }
 
