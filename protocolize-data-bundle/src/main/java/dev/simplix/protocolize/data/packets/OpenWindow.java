@@ -9,6 +9,7 @@ import dev.simplix.protocolize.data.inventory.InventoryType;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
  *
  * @author Exceptionflug
  */
+@Slf4j
 @Getter
 @Setter
 @ToString
@@ -57,10 +59,17 @@ public class OpenWindow extends AbstractPacket {
             titleJson = ProtocolUtil.readString(buf);
             int size = buf.readUnsignedByte();
             inventoryType = InventoryType.type(legacyId, size, protocolVersion);
+            if (inventoryType == null) {
+                log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion);
+            }
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {
             windowId = ProtocolUtil.readVarInt(buf);
-            inventoryType = InventoryType.type(ProtocolUtil.readVarInt(buf), protocolVersion);
+            int id = ProtocolUtil.readVarInt(buf);
+            inventoryType = InventoryType.type(id, protocolVersion);
+            if (inventoryType == null) {
+                log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
+            }
             titleJson = ProtocolUtil.readString(buf);
         }
     }
