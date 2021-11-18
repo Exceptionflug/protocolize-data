@@ -35,9 +35,10 @@ public enum InventoryType {
     LOOM(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 17, 4)),
     MERCHANT(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:villager", 3), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 18, 3)),
     SHULKER_BOX(new InventoryProtocolIdMapping(MINECRAFT_1_9, MINECRAFT_1_13_2, "minecraft:shulker_box", 27), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 19, 27)),
-    SMOKER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 20, 3)),
-    CARTOGRAPHY(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 21, 3)),
-    STONECUTTER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 22, 2)),
+    SMITHING(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 20, 3)),
+    SMOKER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 21, 3)),
+    CARTOGRAPHY(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 22, 3)),
+    STONECUTTER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 23, 2)),
     PLAYER(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, "Player", 45), new InventoryProtocolIdMapping(MINECRAFT_1_9, MINECRAFT_1_13_2, "Player", 46), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, -1, 46));
 
     private final InventoryProtocolIdMapping[] mappings;
