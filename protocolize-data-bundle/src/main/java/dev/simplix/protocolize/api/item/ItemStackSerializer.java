@@ -79,7 +79,7 @@ public final class ItemStackSerializer {
             }
             ItemStack out = new ItemStack(type, amount, durability);
             out.displayNameJson(displayNameJson);
-            out.loreJson(loreJson);
+            out.loreJson(loreJson == null ? new ArrayList<>() : loreJson);
             out.nbtData(tag);
             out.hideFlags(readHideFlags(tag));
             return out;
