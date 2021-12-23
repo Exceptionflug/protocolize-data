@@ -23,4 +23,9 @@ public class LegacyItemProtocolIdMapping extends AbstractProtocolMapping impleme
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return "(" + protocolRangeStart() + "-" + protocolRangeEnd() + ": " + id + ":" + data + ")";
+    }
+
 }

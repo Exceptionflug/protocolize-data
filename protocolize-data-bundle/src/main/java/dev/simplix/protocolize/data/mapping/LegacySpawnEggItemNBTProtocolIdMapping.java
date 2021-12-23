@@ -45,4 +45,9 @@ public class LegacySpawnEggItemNBTProtocolIdMapping extends AbstractLegacyItemNB
         return entityType;
     }
 
+    @Override
+    public String toString() {
+        return "(" + protocolRangeStart() + "-" + protocolRangeEnd() + ": EntityTag[id: " + entityType + "])";
+    }
+
 }
