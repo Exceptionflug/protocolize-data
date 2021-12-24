@@ -60,7 +60,7 @@ public class OpenWindow extends AbstractPacket {
             int size = buf.readUnsignedByte();
             inventoryType = InventoryType.type(legacyId, size, protocolVersion);
             if (inventoryType == null) {
-                log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion);
+                log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
             }
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {

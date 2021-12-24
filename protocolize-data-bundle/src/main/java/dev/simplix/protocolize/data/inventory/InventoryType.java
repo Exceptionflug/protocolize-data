@@ -53,8 +53,13 @@ public enum InventoryType {
                 throw new UnsupportedOperationException("Please use InventoryType#getType(id: int, protocolVersion: int): InventoryType for 1.14 protocol version.");
             }
             final String typeId = type.legacyTypeId(protocolVersion);
-            if (typeId != null && typeId.equals(id) && type.getTypicalSize(protocolVersion) == size)
-                return type;
+            if (typeId == null || !typeId.equals(id)) {
+                continue;
+            }
+            if (type.getTypicalSize(protocolVersion) != size) {
+                continue;
+            }
+            return type;
         }
         return null;
     }

@@ -92,6 +92,7 @@ public final class ItemStackSerializer {
 
     private static ItemType lookupItemType(int id, short data, int protocolVersion) {
         Multimap<ItemType, ProtocolMapping> mappings = MAPPING_PROVIDER.mappings(ItemType.class, protocolVersion);
+        List<ItemType> legacyCandidates = new ArrayList<>();
         for (ItemType type : mappings.keySet()) {
             if (protocolVersion >= MINECRAFT_1_13) {
                 for (ProtocolMapping mapping : mappings.get(type)) {
@@ -104,12 +105,21 @@ public final class ItemStackSerializer {
             } else {
                 for (ProtocolMapping mapping : mappings.get(type)) {
                     if (mapping instanceof LegacyItemProtocolIdMapping) {
-                        if (((ProtocolIdMapping) mapping).id() == id && ((LegacyItemProtocolIdMapping) mapping).data() == data) {
-                            return type;
+                        if (((ProtocolIdMapping) mapping).id() == id) {
+                            legacyCandidates.add(type);
+                            if (((LegacyItemProtocolIdMapping) mapping).data() == data) {
+                                return type;
+                            }
                         }
                     }
                 }
             }
+        }
+        // Tools and stuff with durability will fail the above determination logic.
+        // So we just validate the id and if we are sure about the fact that this item can only
+        // have one possible state, we will return that.
+        if (legacyCandidates.size() == 1) {
+            return legacyCandidates.get(0);
         }
         return null;
     }
