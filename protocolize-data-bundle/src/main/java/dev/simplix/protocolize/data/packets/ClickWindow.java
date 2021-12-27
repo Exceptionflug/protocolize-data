@@ -117,4 +117,9 @@ public class ClickWindow extends AbstractPacket {
         return ClickType.getType(mode, button);
     }
 
+    public void clickType(ClickType clickType) {
+        mode = clickType.mode();
+        button = (byte) clickType.button();
+    }
+
 }
