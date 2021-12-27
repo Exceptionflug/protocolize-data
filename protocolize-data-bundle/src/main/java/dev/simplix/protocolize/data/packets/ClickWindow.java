@@ -49,7 +49,8 @@ public class ClickWindow extends AbstractPacket {
     private int windowId;
     private int actionNumber;
     private short slot;
-    private ClickType clickType;
+    private byte button;
+    private int mode;
     private ItemStack itemStack;
 
     /**
@@ -64,11 +65,10 @@ public class ClickWindow extends AbstractPacket {
             stateId = ProtocolUtil.readVarInt(buf);
         }
         slot = buf.readShort();
-        byte button = buf.readByte();
+        button = buf.readByte();
         if (protocolVersion < MINECRAFT_1_17) {
             actionNumber = buf.readShort();
         }
-        int mode;
         if (protocolVersion == MINECRAFT_1_8) {
             mode = buf.readByte();
         } else {
@@ -80,10 +80,6 @@ public class ClickWindow extends AbstractPacket {
                 slotData.put(buf.readShort(), ItemStackSerializer.read(buf, protocolVersion));
             }
         }
-        clickType = ClickType.getType(mode, button);
-        if (clickType == null) {
-            log.warn("Unsupported click type with mode " + mode + " and button " + button + "! Protocol " + protocolVersion);
-        }
         itemStack = ItemStackSerializer.read(buf, protocolVersion);
     }
 
@@ -94,14 +90,14 @@ public class ClickWindow extends AbstractPacket {
             ProtocolUtil.writeVarInt(buf, stateId);
         }
         buf.writeShort(slot);
-        buf.writeByte(clickType.button());
+        buf.writeByte(button);
         if (protocolVersion < MINECRAFT_1_17) {
             buf.writeShort(actionNumber);
         }
         if (protocolVersion == MINECRAFT_1_8) {
-            buf.writeByte(clickType.mode());
+            buf.writeByte(mode);
         } else {
-            ProtocolUtil.writeVarInt(buf, clickType.mode());
+            ProtocolUtil.writeVarInt(buf, mode);
         }
         if (protocolVersion >= MINECRAFT_1_17) {
             ProtocolUtil.writeVarInt(buf, slotData.size());
@@ -115,6 +111,10 @@ public class ClickWindow extends AbstractPacket {
         } else {
             ItemStackSerializer.write(buf, itemStack, protocolVersion);
         }
+    }
+
+    public ClickType clickType() {
+        return ClickType.getType(mode, button);
     }
 
 }
