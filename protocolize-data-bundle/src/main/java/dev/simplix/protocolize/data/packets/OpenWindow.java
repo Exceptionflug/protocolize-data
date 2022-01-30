@@ -80,7 +80,7 @@ public class OpenWindow extends AbstractPacket {
             buf.writeByte(windowId & 0xFF);
             ProtocolUtil.writeString(buf, Objects.requireNonNull(inventoryType.legacyTypeId(protocolVersion)));
             ProtocolUtil.writeString(buf, titleJson);
-            buf.writeByte(inventoryType.getTypicalSize(protocolVersion) & 0xFF);
+            buf.writeByte(inventoryType.isChest() ? inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0);
         } else {
             ProtocolUtil.writeVarInt(buf, windowId);
             ProtocolUtil.writeVarInt(buf, inventoryType.getTypeId(protocolVersion));

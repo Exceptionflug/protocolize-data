@@ -56,7 +56,7 @@ public enum InventoryType {
             if (typeId == null || !typeId.equals(id)) {
                 continue;
             }
-            if (type.getTypicalSize(protocolVersion) != size) {
+            if (type.isChest() && type.getTypicalSize(protocolVersion) != size) {
                 continue;
             }
             return type;
@@ -123,7 +123,7 @@ public enum InventoryType {
     public boolean isChest() {
         if (this == GENERIC_3X3)
             return false;
-        return this.name().startsWith("GENERIC");
+        return this.name().startsWith("GENERIC") || this.name().contains("CHEST");
     }
 
 }
