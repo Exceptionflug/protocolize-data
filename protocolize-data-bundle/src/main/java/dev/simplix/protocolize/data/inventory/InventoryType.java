@@ -16,6 +16,7 @@ public enum InventoryType {
     GENERIC_9X5(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:container", 45), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 4, 45)),
     GENERIC_9X6(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:container", 54), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 5, 54)),
     GENERIC_3X3(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:dropper", 9), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 6, 9)),
+    DISPENSER(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:dispenser", 9), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 6, 9)),
     LEGACY_CHEST_9X1(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:chest", 9)),
     LEGACY_CHEST_9X2(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:chest", 18)),
     LEGACY_CHEST_9X3(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_13_2, "minecraft:chest", 27)),
