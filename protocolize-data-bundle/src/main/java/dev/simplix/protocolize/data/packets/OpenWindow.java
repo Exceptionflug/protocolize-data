@@ -62,7 +62,6 @@ public class OpenWindow extends AbstractPacket {
             if (inventoryType == null) {
                 log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
             }
-            log.info("Inventory: " + inventoryType.name() + " (" + legacyId + ":" + size+ ")");
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {
             windowId = ProtocolUtil.readVarInt(buf);
@@ -79,13 +78,9 @@ public class OpenWindow extends AbstractPacket {
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion < MINECRAFT_1_14) {
             buf.writeByte(windowId & 0xFF);
-            String str = Objects.requireNonNull(inventoryType.legacyTypeId(protocolVersion));
-            log.info("OUT: " + str);
-            ProtocolUtil.writeString(buf, str);
+            ProtocolUtil.writeString(buf, Objects.requireNonNull(inventoryType.legacyTypeId(protocolVersion)));
             ProtocolUtil.writeString(buf, titleJson);
-            int size = inventoryType.shouldInventorySizeNotBeZero() ? inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0;
-            log.info("SIZE: " + size);
-            buf.writeByte(size);
+            buf.writeByte(inventoryType.shouldInventorySizeNotBeZero() ? inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0);
         } else {
             ProtocolUtil.writeVarInt(buf, windowId);
             ProtocolUtil.writeVarInt(buf, inventoryType.getTypeId(protocolVersion));
