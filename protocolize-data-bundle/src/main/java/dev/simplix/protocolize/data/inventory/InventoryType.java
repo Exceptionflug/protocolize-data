@@ -122,7 +122,7 @@ public enum InventoryType {
     }
 
     public boolean shouldInventorySizeNotBeZero() {
-        return this != CRAFTING && this != ENCHANTMENT && this == ANVIL;
+        return this != CRAFTING && this != ENCHANTMENT && this != ANVIL;
     }
 
 }
