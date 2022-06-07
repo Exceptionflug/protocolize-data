@@ -12,7 +12,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <protocolize.version>2.1.2</protocolize.version>
+        <protocolize.version>2.2.0</protocolize.version>
     </properties>
 
     <modules>

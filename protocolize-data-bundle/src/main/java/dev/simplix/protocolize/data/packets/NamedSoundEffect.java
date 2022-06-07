@@ -46,7 +46,8 @@ public class NamedSoundEffect extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_15, MINECRAFT_1_15_2, 0x1A),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_1, 0x19),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x18),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_LATEST, 0x19)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x19),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_LATEST, 0x16)
     );
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
     private int protocolVersion;
@@ -57,6 +58,11 @@ public class NamedSoundEffect extends AbstractPacket {
     private double z;
     private float volume;
     private float pitch;
+
+    /**
+     * @since protocol version 759 (1.19)
+     */
+    private long seed;
 
     public NamedSoundEffect(Sound sound, SoundCategory category, double x, double y, double z, float volume, float pitch) {
         ProtocolMapping mapping = MAPPING_PROVIDER.mapping(sound, MINECRAFT_LATEST);
@@ -87,6 +93,9 @@ public class NamedSoundEffect extends AbstractPacket {
         } else {
             pitch = buf.readFloat();
         }
+        if (protocolVersion >= MINECRAFT_1_19) {
+            seed = buf.readLong();
+        }
     }
 
     @Override
@@ -112,6 +121,9 @@ public class NamedSoundEffect extends AbstractPacket {
             buf.writeByte((byte) (pitch * 63) & 0xFF);
         } else {
             buf.writeFloat(pitch);
+        }
+        if (protocolVersion >= MINECRAFT_1_19) {
+            buf.writeLong(seed);
         }
     }
 

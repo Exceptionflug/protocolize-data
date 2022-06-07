@@ -2,6 +2,7 @@ package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.Hand;
 import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
@@ -40,14 +41,25 @@ public class UseItem extends AbstractPacket {
 
     private Hand hand;
 
+    /**
+     * @since protocol version 759 (1.19)
+     */
+    private int sequence;
+
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         hand = Hand.handByProtocolId(ProtocolUtil.readVarInt(buf));
+        if (protocolVersion >= MINECRAFT_1_19) {
+            sequence = ProtocolUtil.readVarInt(buf);
+        }
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         ProtocolUtil.writeVarInt(buf, hand.protocolId());
+        if (protocolVersion >= MINECRAFT_1_19) {
+            ProtocolUtil.writeVarInt(buf, sequence);
+        }
     }
 
 }
