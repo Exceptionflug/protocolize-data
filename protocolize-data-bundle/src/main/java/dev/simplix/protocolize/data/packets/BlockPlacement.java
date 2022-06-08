@@ -41,7 +41,8 @@ public class BlockPlacement extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_13, MINECRAFT_1_13_2, 0x29),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_14, MINECRAFT_1_15_2, 0x2C),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_1, 0x2D),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_LATEST, 0x2E)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_18_2, 0x2E),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_LATEST, 0x30)
     );
 
     private BlockPosition position;
@@ -51,6 +52,11 @@ public class BlockPlacement extends AbstractPacket {
     private float hitVecY;
     private float hitVecZ;
     private boolean insideBlock;
+
+    /**
+     * @since protocol version 759 (1.19)
+     */
+    private int sequence;
 
     /**
      * @deprecated Only in protocol 47 used
@@ -90,6 +96,9 @@ public class BlockPlacement extends AbstractPacket {
             hitVecY = buf.readFloat();
             hitVecZ = buf.readFloat();
             insideBlock = buf.readBoolean();
+            if (protocolVersion >= MINECRAFT_1_19) {
+                sequence = ProtocolUtil.readVarInt(buf);
+            }
         }
     }
 
@@ -124,6 +133,9 @@ public class BlockPlacement extends AbstractPacket {
             buf.writeFloat(hitVecY);
             buf.writeFloat(hitVecZ);
             buf.writeBoolean(insideBlock);
+            if (protocolVersion >= MINECRAFT_1_19) {
+                ProtocolUtil.writeVarInt(buf, sequence);
+            }
         }
     }
 
