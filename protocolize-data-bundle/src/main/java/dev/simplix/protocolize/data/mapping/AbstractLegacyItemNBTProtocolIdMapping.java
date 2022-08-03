@@ -1,6 +1,6 @@
 package dev.simplix.protocolize.data.mapping;
 
-import dev.simplix.protocolize.api.item.ItemStack;
+import dev.simplix.protocolize.api.item.BaseItemStack;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import lombok.Getter;
@@ -22,8 +22,8 @@ public abstract class AbstractLegacyItemNBTProtocolIdMapping extends AbstractPro
         this.id = id;
     }
 
-    public abstract void apply(ItemStack stack, int protocolVersion);
+    public abstract void apply(BaseItemStack stack, int protocolVersion);
 
-    public abstract boolean isApplicable(ItemStack stack, int version, int id, int durability);
+    public abstract boolean isApplicable(BaseItemStack stack, int version, int id, int durability);
 
 }

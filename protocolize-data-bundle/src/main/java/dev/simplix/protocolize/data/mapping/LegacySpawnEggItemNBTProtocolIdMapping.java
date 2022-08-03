@@ -14,7 +14,7 @@ public class LegacySpawnEggItemNBTProtocolIdMapping extends AbstractLegacyItemNB
     }
 
     @Override
-    public void apply(ItemStack stack, int protocolVersion) {
+    public void apply(BaseItemStack stack, int protocolVersion) {
         final CompoundTag nbt = stack.nbtData();
         if (nbt != null) {
             CompoundTag entityData = nbt.getCompoundTag("EntityTag");
@@ -25,8 +25,8 @@ public class LegacySpawnEggItemNBTProtocolIdMapping extends AbstractLegacyItemNB
     }
 
     @Override
-    public boolean isApplicable(ItemStack stack, int version, int id, int durability) {
         if (id != 383)
+    public boolean isApplicable(BaseItemStack stack, int version, int id, int durability) {
             return false;
         final CompoundTag nbt = stack.nbtData();
         if (nbt != null) {

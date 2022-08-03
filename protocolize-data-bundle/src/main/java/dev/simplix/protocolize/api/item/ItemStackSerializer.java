@@ -188,7 +188,7 @@ public final class ItemStackSerializer {
 
     // WRITE
 
-    public static void write(ByteBuf buf, ItemStack stack, int protocolVersion) {
+    public static void write(ByteBuf buf, BaseItemStack stack, int protocolVersion) {
         Preconditions.checkNotNull(buf, "Buf cannot be null");
         Preconditions.checkNotNull(stack, "Stack cannot be null");
         try {

@@ -1,6 +1,7 @@
 package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.item.BaseItemStack;
 import dev.simplix.protocolize.api.item.ItemStack;
 import dev.simplix.protocolize.api.item.ItemStackSerializer;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
@@ -48,7 +49,7 @@ public class SetSlot extends AbstractPacket {
 
     private byte windowId;
     private short slot;
-    private ItemStack itemStack = ItemStack.NO_DATA;
+    private BaseItemStack itemStack = ItemStack.NO_DATA;
 
     /**
      * @since Protocol 756
@@ -89,12 +90,12 @@ public class SetSlot extends AbstractPacket {
         });
     }
 
-    public ItemStack itemStack() {
-        lazyBuffer.read();
-        return itemStack;
+    public BaseItemStack itemStack() {
+        this.lazyBuffer.read();
+        return this.itemStack;
     }
 
-    public SetSlot itemStack(ItemStack stack) {
+    public SetSlot itemStack(BaseItemStack stack) {
         this.lazyBuffer = LazyBuffer.empty();
         this.itemStack = stack;
         return this;
