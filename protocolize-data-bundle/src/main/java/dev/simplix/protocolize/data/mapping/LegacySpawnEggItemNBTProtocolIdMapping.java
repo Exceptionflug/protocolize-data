@@ -1,6 +1,6 @@
 package dev.simplix.protocolize.data.mapping;
 
-import dev.simplix.protocolize.api.item.ItemStack;
+import dev.simplix.protocolize.api.item.BaseItemStack;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 
@@ -25,8 +25,8 @@ public class LegacySpawnEggItemNBTProtocolIdMapping extends AbstractLegacyItemNB
     }
 
     @Override
-        if (id != 383)
     public boolean isApplicable(BaseItemStack stack, int version, int id, int durability) {
+        if (id != 383)
             return false;
         final CompoundTag nbt = stack.nbtData();
         if (nbt != null) {
