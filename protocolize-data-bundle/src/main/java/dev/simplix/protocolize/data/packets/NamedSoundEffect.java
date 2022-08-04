@@ -82,8 +82,10 @@ public class NamedSoundEffect extends AbstractPacket {
     public void read(ByteBuf buf, PacketDirection direction, int protocolVersion) {
         this.protocolVersion = protocolVersion;
         sound = ProtocolUtil.readString(buf);
+
         if (protocolVersion > MINECRAFT_1_8)
-            category = SoundCategory.values()[ProtocolUtil.readVarInt(buf)];
+            category = SoundCategory.values()[ProtocolUtil.readVarInt(buf) - 110]; // 110 Value Offset
+
         x = buf.readInt() / 8D;
         y = buf.readInt() / 8D;
         z = buf.readInt() / 8D;
@@ -93,6 +95,7 @@ public class NamedSoundEffect extends AbstractPacket {
         } else {
             pitch = buf.readFloat();
         }
+
         if (protocolVersion >= MINECRAFT_1_19) {
             seed = buf.readLong();
         }
