@@ -83,8 +83,10 @@ public class NamedSoundEffect extends AbstractPacket {
         this.protocolVersion = protocolVersion;
         sound = ProtocolUtil.readString(buf);
 
-        if (protocolVersion > MINECRAFT_1_8)
+        if (protocolVersion >= MINECRAFT_1_19)
             category = SoundCategory.values()[ProtocolUtil.readVarInt(buf) - 110]; // 110 Value Offset
+        else if (protocolVersion > MINECRAFT_1_8)
+            category = SoundCategory.values()[ProtocolUtil.readVarInt(buf)];
 
         x = buf.readInt() / 8D;
         y = buf.readInt() / 8D;
