@@ -56,7 +56,8 @@ public class SetSlot extends AbstractPacket {
      */
     private int stateId;
 
-    public SetSlot(byte windowId, short slot, ItemStack itemStack, int stateId) {
+    public SetSlot(byte windowId, short slot, BaseItemStack itemStack,
+                   int stateId) {
         this.windowId = windowId;
         this.slot = slot;
         this.itemStack = itemStack;
