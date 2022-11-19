@@ -8,12 +8,14 @@ import dev.simplix.protocolize.api.listener.AbstractPacketListener;
 import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
 import dev.simplix.protocolize.data.packets.BlockPlacement;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Date: 31.08.2021
  *
  * @author Exceptionflug
  */
+@Slf4j
 public final class BlockPlacementListener extends AbstractPacketListener<BlockPlacement> {
 
     public BlockPlacementListener() {
@@ -41,8 +43,8 @@ public final class BlockPlacementListener extends AbstractPacketListener<BlockPl
             if (inHand != null || interact.cancelled()) {
                 event.cancelled(true);
             }
-        } catch (Throwable ignored) {
-
+        } catch (Throwable throwable) {
+            log.debug("Error while handling BlockPlacement packet", throwable);
         }
     }
 
