@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 
+import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_19_3;
+
 /**
  * Date: 23.08.2021
  *
@@ -49,7 +51,7 @@ public class DataModule implements ProtocolizeModule {
                 registerItemsUsingLegacyFormat(provider, i);
                 return;
             }
-            Registries registries = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), Registries.class);
+            Registries registries = this.gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), Registries.class);
             registerItemMappings(registries.itemRegistry().entries(), provider, i);
             registerSoundMappings(registries.soundRegistry(), provider, i);
         } catch (Exception e) {
@@ -62,7 +64,7 @@ public class DataModule implements ProtocolizeModule {
             if (stream == null) {
                 return;
             }
-            Map<String, RegistryEntry> legacy = gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), new TypeToken<Map<String, RegistryEntry>>() {
+            Map<String, RegistryEntry> legacy = this.gson.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), new TypeToken<Map<String, RegistryEntry>>() {
             }.getType());
             registerItemMappings(legacy, provider, i);
         } catch (Exception e) {
@@ -84,13 +86,27 @@ public class DataModule implements ProtocolizeModule {
     }
 
     private void registerSoundMappings(SoundRegistry registry, MappingProvider provider, int i) {
-        for (String type : registry.entries().keySet()) {
-            String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
-            try {
-                Sound sound = Sound.valueOf(name);
-                provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
-            } catch (IllegalArgumentException e) {
-                log.warn("Don't know what sound " + name + " was at protocol " + i);
+        if (i >= MINECRAFT_1_19_3) {
+            for (String type : registry.entries().keySet()) {
+                String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
+                try {
+                    Sound sound = Sound.valueOf(name);
+                    RegistryEntry entry = registry.entries().get(type);
+                    provider.registerMapping(sound, AbstractProtocolMapping.rangedIdMapping(i, i, entry.protocolId()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Don't know what sound " + name + " was at protocol " + i);
+                }
+            }
+
+        } else {
+            for (String type : registry.entries().keySet()) {
+                String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
+                try {
+                    Sound sound = Sound.valueOf(name);
+                    provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Don't know what sound " + name + " was at protocol " + i);
+                }
             }
         }
     }

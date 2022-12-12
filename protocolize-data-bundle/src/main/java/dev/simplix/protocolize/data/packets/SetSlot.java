@@ -40,7 +40,8 @@ public class SetSlot extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_1, 0x16),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x15),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x16),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_LATEST, 0x13)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19_2, 0x13),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x12)
     );
 
     @Getter(AccessLevel.NONE)
@@ -66,28 +67,28 @@ public class SetSlot extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        windowId = buf.readByte();
+        this.windowId = buf.readByte();
         if (protocolVersion >= MINECRAFT_1_17_1) {
-            stateId = ProtocolUtil.readVarInt(buf);
+            this.stateId = ProtocolUtil.readVarInt(buf);
         }
-        slot = buf.readShort();
+        this.slot = buf.readShort();
 
         byte[] data = new byte[buf.readableBytes()];
         buf.readBytes(data);
-        lazyBuffer = new LazyBuffer(data, byteBuf -> {
-            itemStack = ItemStackSerializer.read(byteBuf, protocolVersion);
+        this.lazyBuffer = new LazyBuffer(data, byteBuf -> {
+            this.itemStack = ItemStackSerializer.read(byteBuf, protocolVersion);
         });
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(windowId);
+        buf.writeByte(this.windowId);
         if (protocolVersion >= MINECRAFT_1_17_1) {
-            ProtocolUtil.writeVarInt(buf, stateId);
+            ProtocolUtil.writeVarInt(buf, this.stateId);
         }
-        buf.writeShort(slot);
-        lazyBuffer.write(buf, () -> {
-            ItemStackSerializer.write(buf, itemStack, protocolVersion);
+        buf.writeShort(this.slot);
+        this.lazyBuffer.write(buf, () -> {
+            ItemStackSerializer.write(buf, this.itemStack, protocolVersion);
         });
     }
 

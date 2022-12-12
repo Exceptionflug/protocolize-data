@@ -44,7 +44,8 @@ public class ClickWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_14, MINECRAFT_1_16_4, 0x09),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x08),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x0A),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x0B)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x0B),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x0B)
     );
 
     private Map<Short, ItemStack> slotData = new HashMap<>();
@@ -62,66 +63,66 @@ public class ClickWindow extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        windowId = buf.readUnsignedByte();
+        this.windowId = buf.readUnsignedByte();
         if (protocolVersion >= MINECRAFT_1_17_1) {
-            stateId = ProtocolUtil.readVarInt(buf);
+            this.stateId = ProtocolUtil.readVarInt(buf);
         }
-        slot = buf.readShort();
-        button = buf.readByte();
+        this.slot = buf.readShort();
+        this.button = buf.readByte();
         if (protocolVersion < MINECRAFT_1_17) {
-            actionNumber = buf.readShort();
+            this.actionNumber = buf.readShort();
         }
         if (protocolVersion == MINECRAFT_1_8) {
-            mode = buf.readByte();
+            this.mode = buf.readByte();
         } else {
-            mode = ProtocolUtil.readVarInt(buf);
+            this.mode = ProtocolUtil.readVarInt(buf);
         }
         if (protocolVersion >= MINECRAFT_1_17) {
             int length = ProtocolUtil.readVarInt(buf);
             for (int i = 0; i < length; i++) {
-                slotData.put(buf.readShort(), ItemStackSerializer.read(buf, protocolVersion));
+                this.slotData.put(buf.readShort(), ItemStackSerializer.read(buf, protocolVersion));
             }
         }
-        itemStack = ItemStackSerializer.read(buf, protocolVersion);
+        this.itemStack = ItemStackSerializer.read(buf, protocolVersion);
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(windowId & 0xFF);
+        buf.writeByte(this.windowId & 0xFF);
         if (protocolVersion >= MINECRAFT_1_17_1) {
-            ProtocolUtil.writeVarInt(buf, stateId);
+            ProtocolUtil.writeVarInt(buf, this.stateId);
         }
-        buf.writeShort(slot);
-        buf.writeByte(button);
+        buf.writeShort(this.slot);
+        buf.writeByte(this.button);
         if (protocolVersion < MINECRAFT_1_17) {
-            buf.writeShort(actionNumber);
+            buf.writeShort(this.actionNumber);
         }
         if (protocolVersion == MINECRAFT_1_8) {
-            buf.writeByte(mode);
+            buf.writeByte(this.mode);
         } else {
-            ProtocolUtil.writeVarInt(buf, mode);
+            ProtocolUtil.writeVarInt(buf, this.mode);
         }
         if (protocolVersion >= MINECRAFT_1_17) {
-            ProtocolUtil.writeVarInt(buf, slotData.size());
-            for (short slot : slotData.keySet()) {
+            ProtocolUtil.writeVarInt(buf, this.slotData.size());
+            for (short slot : this.slotData.keySet()) {
                 buf.writeShort(slot);
-                ItemStackSerializer.write(buf, slotData.get(slot), protocolVersion);
+                ItemStackSerializer.write(buf, this.slotData.get(slot), protocolVersion);
             }
         }
-        if (itemStack == null) {
+        if (this.itemStack == null) {
             ItemStackSerializer.write(buf, ItemStack.NO_DATA, protocolVersion);
         } else {
-            ItemStackSerializer.write(buf, itemStack, protocolVersion);
+            ItemStackSerializer.write(buf, this.itemStack, protocolVersion);
         }
     }
 
     public ClickType clickType() {
-        return ClickType.getType(mode, button);
+        return ClickType.getType(this.mode, this.button);
     }
 
     public void clickType(ClickType clickType) {
-        mode = clickType.mode();
-        button = (byte) clickType.button();
+        this.mode = clickType.mode();
+        this.button = (byte) clickType.button();
     }
 
 }

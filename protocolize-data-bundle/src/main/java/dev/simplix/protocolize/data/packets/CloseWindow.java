@@ -35,7 +35,8 @@ public class CloseWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_1, 0x13),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x12),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x13),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_LATEST, 0x10)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19_2, 0x10),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x0F)
     );
 
     public static final List<ProtocolIdMapping> SERVERBOUND_MAPPINGS = Arrays.asList(
@@ -55,15 +56,15 @@ public class CloseWindow extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion >= MINECRAFT_1_12 && packetDirection == PacketDirection.CLIENTBOUND) {
-            windowId = buf.readByte();
+            this.windowId = buf.readByte();
         } else {
-            windowId = buf.readUnsignedByte();
+            this.windowId = buf.readUnsignedByte();
         }
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(windowId);
+        buf.writeByte(this.windowId);
     }
 
 }

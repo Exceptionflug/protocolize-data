@@ -38,7 +38,8 @@ public class PlayerPosition extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_4, 0x12),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x11),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x13),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x14)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x14),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x13)
     );
 
     private Location location;
@@ -49,17 +50,17 @@ public class PlayerPosition extends AbstractPacket {
         double x = buf.readDouble();
         double y = buf.readDouble();
         double z = buf.readDouble();
-        onGround = buf.readBoolean();
+        this.onGround = buf.readBoolean();
 
-        location = new Location(x, y, z, 0, 0);
+        this.location = new Location(x, y, z, 0, 0);
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
-        buf.writeDouble(location.x());
-        buf.writeDouble(location.y());
-        buf.writeDouble(location.z());
-        buf.writeBoolean(onGround);
+        buf.writeDouble(this.location.x());
+        buf.writeDouble(this.location.y());
+        buf.writeDouble(this.location.z());
+        buf.writeBoolean(this.onGround);
     }
 
 }

@@ -36,7 +36,8 @@ public class WindowProperty extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_1, 0x15),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x14),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x15),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_LATEST, 0x12)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19_2, 0x12),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x11)
     );
 
     private int windowId;
@@ -45,16 +46,16 @@ public class WindowProperty extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
-        windowId = buf.readUnsignedByte();
-        property = buf.readShort();
-        value = buf.readShort();
+        this.windowId = buf.readUnsignedByte();
+        this.property = buf.readShort();
+        this.value = buf.readShort();
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
-        buf.writeByte(windowId);
-        buf.writeShort(property);
-        buf.writeShort(value);
+        buf.writeByte(this.windowId);
+        buf.writeShort(this.property);
+        buf.writeShort(this.value);
     }
 
 }

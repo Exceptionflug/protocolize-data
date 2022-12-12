@@ -42,7 +42,8 @@ public class OpenWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x2D),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x2E),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x2B),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x2D)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x2D),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x2C)
     );
 
     private int windowId;
@@ -56,37 +57,37 @@ public class OpenWindow extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion < MINECRAFT_1_14) {
-            windowId = buf.readUnsignedByte();
+            this.windowId = buf.readUnsignedByte();
             String legacyId = ProtocolUtil.readString(buf);
-            titleJson = ProtocolUtil.readString(buf);
+            this.titleJson = ProtocolUtil.readString(buf);
             int size = buf.readUnsignedByte();
-            inventoryType = InventoryType.type(legacyId, size, protocolVersion);
-            if (inventoryType == null) {
+            this.inventoryType = InventoryType.type(legacyId, size, protocolVersion);
+            if (this.inventoryType == null) {
                 log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
             }
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {
-            windowId = ProtocolUtil.readVarInt(buf);
+            this.windowId = ProtocolUtil.readVarInt(buf);
             int id = ProtocolUtil.readVarInt(buf);
-            inventoryType = InventoryType.type(id, protocolVersion);
-            if (inventoryType == null) {
+            this.inventoryType = InventoryType.type(id, protocolVersion);
+            if (this.inventoryType == null) {
                 log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
             }
-            titleJson = ProtocolUtil.readString(buf);
+            this.titleJson = ProtocolUtil.readString(buf);
         }
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion < MINECRAFT_1_14) {
-            buf.writeByte(windowId & 0xFF);
-            ProtocolUtil.writeString(buf, Objects.requireNonNull(inventoryType.legacyTypeId(protocolVersion)));
-            ProtocolUtil.writeString(buf, titleJson);
-            buf.writeByte(inventoryType.shouldInventorySizeNotBeZero() ? inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0);
+            buf.writeByte(this.windowId & 0xFF);
+            ProtocolUtil.writeString(buf, Objects.requireNonNull(this.inventoryType.legacyTypeId(protocolVersion)));
+            ProtocolUtil.writeString(buf, this.titleJson);
+            buf.writeByte(this.inventoryType.shouldInventorySizeNotBeZero() ? this.inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0);
         } else {
-            ProtocolUtil.writeVarInt(buf, windowId);
-            ProtocolUtil.writeVarInt(buf, inventoryType.getTypeId(protocolVersion));
-            ProtocolUtil.writeString(buf, titleJson);
+            ProtocolUtil.writeVarInt(buf, this.windowId);
+            ProtocolUtil.writeVarInt(buf, this.inventoryType.getTypeId(protocolVersion));
+            ProtocolUtil.writeString(buf, this.titleJson);
         }
     }
 

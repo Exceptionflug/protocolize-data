@@ -38,7 +38,8 @@ public class PlayerPositionLook extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_5, 0x13),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x12),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x14),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x15)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x15),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x14)
     );
 
     private Location location;
@@ -46,18 +47,18 @@ public class PlayerPositionLook extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
-        location = new Location(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readFloat(), buf.readFloat());
-        onGround = buf.readBoolean();
+        this.location = new Location(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readFloat(), buf.readFloat());
+        this.onGround = buf.readBoolean();
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
-        buf.writeDouble(location.x());
-        buf.writeDouble(location.y());
-        buf.writeDouble(location.z());
-        buf.writeFloat(location.yaw());
-        buf.writeFloat(location.pitch());
-        buf.writeBoolean(onGround);
+        buf.writeDouble(this.location.x());
+        buf.writeDouble(this.location.y());
+        buf.writeDouble(this.location.z());
+        buf.writeFloat(this.location.yaw());
+        buf.writeFloat(this.location.pitch());
+        buf.writeBoolean(this.onGround);
     }
 
 }

@@ -38,7 +38,8 @@ public class HeldItemChange extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_4, 0x3F),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x48),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x47),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x4A)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x4A),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x49)
     );
 
     public static final List<ProtocolIdMapping> SERVERBOUND_MAPPINGS = Arrays.asList(
@@ -58,18 +59,18 @@ public class HeldItemChange extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (packetDirection == PacketDirection.SERVERBOUND) {
-            newSlot = buf.readShort();
+            this.newSlot = buf.readShort();
         } else {
-            newSlot = buf.readByte();
+            this.newSlot = buf.readByte();
         }
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (packetDirection == PacketDirection.SERVERBOUND) {
-            buf.writeShort(newSlot);
+            buf.writeShort(this.newSlot);
         } else {
-            buf.writeByte(newSlot);
+            buf.writeByte(this.newSlot);
         }
     }
 

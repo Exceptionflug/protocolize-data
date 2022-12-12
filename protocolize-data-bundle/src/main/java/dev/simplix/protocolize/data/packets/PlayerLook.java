@@ -37,7 +37,8 @@ public class PlayerLook extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16, MINECRAFT_1_16_5, 0x14),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x13),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x15),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x16)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x16),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x15)
     );
 
     private float yaw;
@@ -46,16 +47,16 @@ public class PlayerLook extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
-        yaw = buf.readFloat();
-        pitch = buf.readFloat();
-        onGround = buf.readBoolean();
+        this.yaw = buf.readFloat();
+        this.pitch = buf.readFloat();
+        this.onGround = buf.readBoolean();
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
-        buf.writeFloat(yaw);
-        buf.writeFloat(pitch);
-        buf.writeBoolean(onGround);
+        buf.writeFloat(this.yaw);
+        buf.writeFloat(this.pitch);
+        buf.writeBoolean(this.onGround);
     }
 
 }

@@ -11,7 +11,6 @@ import dev.simplix.protocolize.api.mapping.ProtocolStringMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
-import dev.simplix.protocolize.api.util.ProtocolVersions;
 import dev.simplix.protocolize.data.Sound;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
@@ -48,12 +47,14 @@ public class NamedSoundEffect extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x18),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x19),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x16),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_LATEST, 0x17)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x17),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x60) // `Sound`
     );
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
     private int protocolVersion;
-    private String sound;
+    private String soundName;
     private SoundCategory category;
+    private int soundId = -1; // Only used for 1.19_3+
     private double x;
     private double y;
     private double z;
@@ -70,7 +71,7 @@ public class NamedSoundEffect extends AbstractPacket {
         if (mapping == null) {
             throw new IllegalStateException("Unable to resolve sound " + sound.name() + " at latest protocol version");
         }
-        this.sound = ((ProtocolStringMapping) mapping).id();
+        this.soundName = ((ProtocolStringMapping) mapping).id();
         this.category = category;
         this.x = x;
         this.y = y;
@@ -82,49 +83,74 @@ public class NamedSoundEffect extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection direction, int protocolVersion) {
         this.protocolVersion = protocolVersion;
-        sound = ProtocolUtil.readString(buf);
-        if (protocolVersion > MINECRAFT_1_8)
-            category = SoundCategory.values()[ProtocolUtil.readVarInt(buf)];
-        x = buf.readInt() / 8D;
-        y = buf.readInt() / 8D;
-        z = buf.readInt() / 8D;
-        volume = buf.readFloat();
-        if (protocolVersion < MINECRAFT_1_10) {
-            pitch = buf.readUnsignedByte() / 63F;
+        if (protocolVersion > MINECRAFT_1_19_2) {
+            this.soundId = ProtocolUtil.readVarInt(buf);
         } else {
-            pitch = buf.readFloat();
+            this.soundName = ProtocolUtil.readString(buf);
+        }
+        this.soundName = ProtocolUtil.readString(buf);
+        if (protocolVersion > MINECRAFT_1_8) {
+            this.category = SoundCategory.values()[ProtocolUtil.readVarInt(buf)];
+        }
+        this.x = buf.readInt() / 8D;
+        this.y = buf.readInt() / 8D;
+        this.z = buf.readInt() / 8D;
+        this.volume = buf.readFloat();
+        if (protocolVersion < MINECRAFT_1_10) {
+            this.pitch = buf.readUnsignedByte() / 63F;
+        } else {
+            this.pitch = buf.readFloat();
         }
         if (protocolVersion >= MINECRAFT_1_19) {
-            seed = buf.readLong();
+            this.seed = buf.readLong();
         }
     }
 
     @Override
     public void write(ByteBuf buf, PacketDirection direction, int protocolVersion) {
-        Sound sound = lookupSound(this.sound, this.protocolVersion == 0 ? protocolVersion : this.protocolVersion);
-        if (sound != null) {
-            ProtocolMapping mapping = MAPPING_PROVIDER.mapping(sound, protocolVersion);
-            if (mapping != null) {
-                ProtocolUtil.writeString(buf, ((ProtocolStringMapping) mapping).id());
+
+        if (protocolVersion > MINECRAFT_1_19_2) {
+            Sound sound = lookupSound(this.soundId, this.protocolVersion == 0 ? protocolVersion : this.protocolVersion);
+
+            if (sound != null) {
+                ProtocolMapping mapping = MAPPING_PROVIDER.mapping(sound, protocolVersion);
+                if (mapping != null) {
+                    ProtocolUtil.writeVarInt(buf, ((ProtocolIdMapping) mapping).id());
+                } else {
+                    ProtocolUtil.writeVarInt(buf, this.soundId);
+                }
             } else {
-                ProtocolUtil.writeString(buf, this.sound);
+                ProtocolUtil.writeVarInt(buf, this.soundId);
             }
+
         } else {
-            ProtocolUtil.writeString(buf, this.sound);
+            Sound sound = lookupSound(this.soundName, this.protocolVersion == 0 ? protocolVersion : this.protocolVersion);
+            if (sound != null) {
+                ProtocolMapping mapping = MAPPING_PROVIDER.mapping(sound, protocolVersion);
+                if (mapping != null) {
+                    ProtocolUtil.writeString(buf, ((ProtocolStringMapping) mapping).id());
+                } else {
+                    ProtocolUtil.writeString(buf, this.soundName);
+                }
+            } else {
+                ProtocolUtil.writeString(buf, this.soundName);
+            }
         }
-        if (protocolVersion > MINECRAFT_1_8)
-            ProtocolUtil.writeVarInt(buf, category.ordinal());
-        buf.writeInt((int) (x * 8));
-        buf.writeInt((int) (y * 8));
-        buf.writeInt((int) (z * 8));
-        buf.writeFloat(volume);
+
+        if (protocolVersion > MINECRAFT_1_8) {
+            ProtocolUtil.writeVarInt(buf, this.category.ordinal());
+        }
+        buf.writeInt((int) (this.x * 8));
+        buf.writeInt((int) (this.y * 8));
+        buf.writeInt((int) (this.z * 8));
+        buf.writeFloat(this.volume);
         if (protocolVersion < MINECRAFT_1_10) {
-            buf.writeByte((byte) (pitch * 63) & 0xFF);
+            buf.writeByte((byte) (this.pitch * 63) & 0xFF);
         } else {
-            buf.writeFloat(pitch);
+            buf.writeFloat(this.pitch);
         }
         if (protocolVersion >= MINECRAFT_1_19) {
-            buf.writeLong(seed);
+            buf.writeLong(this.seed);
         }
     }
 
@@ -142,8 +168,27 @@ public class NamedSoundEffect extends AbstractPacket {
         return null;
     }
 
-    public Sound sound() {
-        return lookupSound(sound, protocolVersion);
+    private Sound lookupSound(int id, int protocolVersion) {
+        Multimap<Sound, ProtocolMapping> mappings = MAPPING_PROVIDER.mappings(Sound.class, protocolVersion);
+        for (Sound sound : mappings.keySet()) {
+            for (ProtocolMapping mapping : mappings.get(sound)) {
+                if (mapping instanceof ProtocolIdMapping) {
+                    if (((ProtocolIdMapping) mapping).id() == id) {
+                        return sound;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public Sound soundName() {
+        if (this.soundName != null) {
+            return lookupSound(this.soundName, this.protocolVersion);
+        } else if (this.soundId != -1) {
+            return lookupSound(this.soundId, this.protocolVersion);
+        }
+        return null;
     }
 
 }
