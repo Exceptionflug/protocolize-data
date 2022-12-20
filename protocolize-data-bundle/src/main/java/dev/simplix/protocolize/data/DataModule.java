@@ -15,6 +15,7 @@ import dev.simplix.protocolize.api.providers.ProtocolRegistrationProvider;
 import dev.simplix.protocolize.api.util.ProtocolVersions;
 import dev.simplix.protocolize.data.listeners.*;
 import dev.simplix.protocolize.data.packets.*;
+import dev.simplix.protocolize.data.packets.SoundEffect;
 import dev.simplix.protocolize.data.registries.Registries;
 import dev.simplix.protocolize.data.registries.RegistryEntry;
 import dev.simplix.protocolize.data.registries.SoundRegistry;
@@ -86,27 +87,19 @@ public class DataModule implements ProtocolizeModule {
     }
 
     private void registerSoundMappings(SoundRegistry registry, MappingProvider provider, int i) {
-        if (i >= MINECRAFT_1_19_3) {
-            for (String type : registry.entries().keySet()) {
-                String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
-                try {
-                    Sound sound = Sound.valueOf(name);
-                    RegistryEntry entry = registry.entries().get(type);
-                    provider.registerMapping(sound, AbstractProtocolMapping.rangedIdMapping(i, i, entry.protocolId()));
-                } catch (IllegalArgumentException e) {
-                    log.warn("Don't know what sound " + name + " was at protocol " + i);
-                }
-            }
+        for (String type : registry.entries().keySet()) {
+            String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
+            try {
+                Sound sound = Sound.valueOf(name);
+                RegistryEntry entry = registry.entries().get(type);
+                provider.registerMapping(new SoundEffectData(sound), AbstractProtocolMapping.rangedIdMapping(i, i, entry.protocolId()));
 
-        } else {
-            for (String type : registry.entries().keySet()) {
-                String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
-                try {
-                    Sound sound = Sound.valueOf(name);
+                if (i < MINECRAFT_1_19_3) {
+                    // Legacy string id mapping
                     provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
-                } catch (IllegalArgumentException e) {
-                    log.warn("Don't know what sound " + name + " was at protocol " + i);
                 }
+            } catch (IllegalArgumentException e) {
+                log.warn("Don't know what sound " + name + " was at protocol " + i);
             }
         }
     }
@@ -125,6 +118,7 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerPacket(ConfirmTransaction.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ConfirmTransaction.class);
         registrationProvider.registerPacket(CloseWindow.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, CloseWindow.class);
         registrationProvider.registerPacket(NamedSoundEffect.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, NamedSoundEffect.class);
+        registrationProvider.registerPacket(SoundEffect.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SoundEffect.class);
 
         // SERVERBOUND
         registrationProvider.registerPacket(UseItem.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, UseItem.class);
