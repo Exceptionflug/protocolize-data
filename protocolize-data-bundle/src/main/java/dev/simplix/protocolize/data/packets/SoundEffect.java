@@ -7,6 +7,7 @@ import dev.simplix.protocolize.api.SoundCategory;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
+import dev.simplix.protocolize.api.mapping.ProtocolStringMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
@@ -65,7 +66,7 @@ public class SoundEffect extends AbstractPacket {
     private double z;
     private float volume;
     private float pitch;
-    private Float unknown1;
+    private Float fixedRange;
 
     /**
      * @since protocol version 759 (1.19)
@@ -99,7 +100,7 @@ public class SoundEffect extends AbstractPacket {
             // Read resource location
             this.resourceLocation = ProtocolUtil.readString(buf);
             if (buf.readBoolean()) {
-                this.unknown1 = buf.readFloat();
+                this.fixedRange = buf.readFloat();
             }
         }
         if (protocolVersion > MINECRAFT_1_8) {
@@ -143,9 +144,9 @@ public class SoundEffect extends AbstractPacket {
         ProtocolUtil.writeVarInt(buf, this.soundId);
         if (this.soundId == 0) {
             ProtocolUtil.writeString(buf, this.resourceLocation);
-            buf.writeBoolean(this.unknown1 != null);
-            if (this.unknown1 != null) {
-                buf.writeFloat(this.unknown1);
+            buf.writeBoolean(this.fixedRange != null);
+            if (this.fixedRange != null) {
+                buf.writeFloat(this.fixedRange);
             }
         }
         if (protocolVersion > MINECRAFT_1_8) {
@@ -169,12 +170,13 @@ public class SoundEffect extends AbstractPacket {
         if (this.supportedSound == null) {
             throw new IllegalStateException("Packet holds no sound information");
         }
-        ProtocolMapping mapping = MAPPING_PROVIDER.mapping(new SoundEffectData(supportedSound), protocolVersion);
-        if (!(mapping instanceof ProtocolIdMapping)) {
+        ProtocolMapping mapping = MAPPING_PROVIDER.mapping(supportedSound, protocolVersion);
+        if (!(mapping instanceof ProtocolStringMapping)) {
             throw new IllegalArgumentException("Unable to play sound effect " + supportedSound.name() +
                 " at protocol version " + protocolVersion);
         }
-        this.soundId = ((ProtocolIdMapping) mapping).id();
+        this.soundId = 0;
+        this.resourceLocation = "minecraft:" + ((ProtocolStringMapping) mapping).id();
     }
 
     public void supportedSound(Sound sound) {

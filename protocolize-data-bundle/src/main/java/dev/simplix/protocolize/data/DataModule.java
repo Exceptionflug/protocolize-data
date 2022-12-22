@@ -92,12 +92,8 @@ public class DataModule implements ProtocolizeModule {
             try {
                 Sound sound = Sound.valueOf(name);
                 RegistryEntry entry = registry.entries().get(type);
-                provider.registerMapping(new SoundEffectData(sound), AbstractProtocolMapping.rangedIdMapping(i, i, entry.protocolId()));
 
-                if (i < MINECRAFT_1_19_3) {
-                    // Legacy string id mapping
-                    provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
-                }
+                provider.registerMapping(sound, AbstractProtocolMapping.rangedStringMapping(i, i, type));
             } catch (IllegalArgumentException e) {
                 log.warn("Don't know what sound " + name + " was at protocol " + i);
             }
