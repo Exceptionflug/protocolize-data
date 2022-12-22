@@ -95,7 +95,7 @@ public class SoundEffect extends AbstractPacket {
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         this.soundId = ProtocolUtil.readVarInt(buf);
-        if (this.soundId == 0) {
+        if (this.soundId == 0 && protocolVersion >= MINECRAFT_1_19_3) {
             // Read resource location
             this.resourceLocation = ProtocolUtil.readString(buf);
             if (buf.readBoolean()) {
@@ -142,7 +142,7 @@ public class SoundEffect extends AbstractPacket {
             lookUpSoundId(protocolVersion);
         }
         ProtocolUtil.writeVarInt(buf, this.soundId);
-        if (this.soundId == 0) {
+        if (this.soundId == 0 && protocolVersion >= MINECRAFT_1_19_3) {
             ProtocolUtil.writeString(buf, this.resourceLocation);
             buf.writeBoolean(this.fixedRange != null);
             if (this.fixedRange != null) {
