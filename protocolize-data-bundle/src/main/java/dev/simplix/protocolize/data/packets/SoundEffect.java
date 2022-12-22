@@ -12,7 +12,6 @@ import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.Sound;
-import dev.simplix.protocolize.data.SoundEffectData;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -123,12 +122,13 @@ public class SoundEffect extends AbstractPacket {
     }
 
     private void lookUpSound(int protocolVersion) {
-        Multimap<SoundEffectData, ProtocolMapping> mappings = MAPPING_PROVIDER.mappings(SoundEffectData.class, protocolVersion);
-        for (SoundEffectData sound : mappings.keySet()) {
+        Multimap<Sound, ProtocolMapping> mappings = MAPPING_PROVIDER.mappings(Sound.class, protocolVersion);
+        for (Sound sound : mappings.keySet()) {
             for (ProtocolMapping mapping : mappings.get(sound)) {
-                if (mapping instanceof ProtocolIdMapping) {
-                    if (((ProtocolIdMapping) mapping).id() == this.soundId) {
-                        this.supportedSound = sound.sound();
+                if (mapping instanceof ProtocolStringMapping) {
+                    String id = "minecraft:" + ((ProtocolStringMapping) mapping).id();
+                    if (id.equals(this.resourceLocation)) {
+                        this.supportedSound = sound;
                         return;
                     }
                 }
