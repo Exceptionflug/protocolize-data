@@ -39,7 +39,8 @@ public class HeldItemChange extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x48),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x47),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x4A),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x49)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_1_19_3, 0x49),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_LATEST, 0x4D)
     );
 
     public static final List<ProtocolIdMapping> SERVERBOUND_MAPPINGS = Arrays.asList(

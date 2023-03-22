@@ -36,7 +36,8 @@ public class CloseWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_16_4, 0x12),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x13),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19_2, 0x10),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x0F)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_1_19_3, 0x0F),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_LATEST, 0x11)
     );
 
     public static final List<ProtocolIdMapping> SERVERBOUND_MAPPINGS = Arrays.asList(
@@ -49,7 +50,8 @@ public class CloseWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_17, MINECRAFT_1_18_2, 0x09),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x0B),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_19_2, 0x0C),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_LATEST, 0x0B)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_1_19_3, 0x0B),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_LATEST, 0x0C)
     );
 
     private int windowId;
