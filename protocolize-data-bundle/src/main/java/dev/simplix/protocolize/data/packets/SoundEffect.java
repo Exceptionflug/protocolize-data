@@ -127,7 +127,7 @@ public class SoundEffect extends AbstractPacket {
         for (Sound sound : mappings.keySet()) {
             for (ProtocolMapping mapping : mappings.get(sound)) {
                 if (mapping instanceof ProtocolStringMapping) {
-                    String id = "minecraft:" + ((ProtocolStringMapping) mapping).id();
+                    String id = ((ProtocolStringMapping) mapping).id();
                     if (id.equals(this.resourceLocation)) {
                         this.supportedSound = sound;
                         return;
@@ -177,7 +177,7 @@ public class SoundEffect extends AbstractPacket {
                 " at protocol version " + protocolVersion);
         }
         this.soundId = 0;
-        this.resourceLocation = "minecraft:" + ((ProtocolStringMapping) mapping).id();
+        this.resourceLocation = ((ProtocolStringMapping) mapping).id();
     }
 
     public void supportedSound(Sound sound) {
