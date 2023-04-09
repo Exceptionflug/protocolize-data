@@ -39,7 +39,7 @@ public enum InventoryType {
     SMITHING(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 20, 3)),
     SMOKER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 21, 3)),
     CARTOGRAPHY(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 22, 3)),
-    STONECUTTER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, 23, 2)),
+    STONECUTTER(new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_1_19_3, 23, 2), new InventoryProtocolIdMapping(MINECRAFT_1_19_4, MINECRAFT_LATEST, 24, 2)),
     PLAYER(new InventoryProtocolIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, "Player", 45), new InventoryProtocolIdMapping(MINECRAFT_1_9, MINECRAFT_1_13_2, "Player", 46), new InventoryProtocolIdMapping(MINECRAFT_1_14, MINECRAFT_LATEST, -1, 46));
 
     private final InventoryProtocolIdMapping[] mappings;
