@@ -7286,16 +7286,16 @@
       "minecraft:potion": {
         "protocol_id": 953
       },
-      "minecraft:pottery_shard_archer": {
+      "minecraft:angler_pottery_sherd": {
         "protocol_id": 1224
       },
-      "minecraft:pottery_shard_arms_up": {
+      "minecraft:arms_up_pottery_sherd": {
         "protocol_id": 1226
       },
-      "minecraft:pottery_shard_prize": {
+      "minecraft:prize_pottery_sherd": {
         "protocol_id": 1225
       },
-      "minecraft:pottery_shard_skull": {
+      "minecraft:skull_pottery_sherd": {
         "protocol_id": 1227
       },
       "minecraft:powder_snow_bucket": {
@@ -13914,10 +13914,10 @@
       "minecraft:item.bottle.fill_dragonbreath": {
         "protocol_id": 164
       },
-      "minecraft:item.brush.brush_sand_completed": {
+      "minecraft:item.brush.brushing.sand.complete": {
         "protocol_id": 167
       },
-      "minecraft:item.brush.brushing": {
+      "minecraft:item.brush.brushing.generic": {
         "protocol_id": 166
       },
       "minecraft:item.bucket.empty": {
@@ -14148,7 +14148,10 @@
       "minecraft:music.overworld.jagged_peaks": {
         "protocol_id": 801
       },
-      "minecraft:music.overworld.jungle_and_forest": {
+      "minecraft:music.overworld.jungle": {
+        "protocol_id": 804
+      },
+      "minecraft:music.overworld.forest": {
         "protocol_id": 804
       },
       "minecraft:music.overworld.lush_caves": {

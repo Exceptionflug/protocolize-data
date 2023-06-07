@@ -13219,7 +13219,10 @@
       "minecraft:music.overworld.jagged_peaks": {
         "protocol_id": 703
       },
-      "minecraft:music.overworld.jungle_and_forest": {
+      "minecraft:music.overworld.jungle": {
+        "protocol_id": 706
+      },
+      "minecraft:music.overworld.forest": {
         "protocol_id": 706
       },
       "minecraft:music.overworld.lush_caves": {
