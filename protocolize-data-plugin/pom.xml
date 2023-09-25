@@ -50,6 +50,12 @@
             <artifactId>protocolize-api</artifactId>
             <version>${protocolize.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>dev.simplix</groupId>
+                    <artifactId>protocolize-data-bundle</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

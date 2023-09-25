@@ -58,7 +58,7 @@ public final class ItemStackSerializer {
             if (id == 0) {
                 return new ItemStack(ItemType.AIR, amount, durability);
             }
-            CompoundTag tag = readItemTag(buf);
+            CompoundTag tag = readItemTag(buf, protocolVersion);
             String displayNameJson = null;
             List<String> loreJson = readLoreJson(tag, protocolVersion);
             if (protocolVersion >= MINECRAFT_1_13 && tag != null) {
@@ -166,12 +166,12 @@ public final class ItemStackSerializer {
         return name.getValue();
     }
 
-    private static CompoundTag readItemTag(ByteBuf byteBuf) throws IOException {
-        NamedTag tag = NamedBinaryTagUtil.readTag(byteBuf);
+    private static CompoundTag readItemTag(ByteBuf byteBuf, int protocolVersion) throws IOException {
+        Tag<?> tag = NamedBinaryTagUtil.readTag(byteBuf, protocolVersion);
         if (tag == null) {
             return new CompoundTag();
         }
-        return (CompoundTag) tag.getTag();
+        return (CompoundTag) tag;
     }
 
     private static int readItemId(ByteBuf buf, int protocolVersion) {
@@ -247,11 +247,11 @@ public final class ItemStackSerializer {
             }
             buf.markWriterIndex();
             try {
-                NamedBinaryTagUtil.writeTag(buf, stack.nbtData());
+                NamedBinaryTagUtil.writeTag(buf, stack.nbtData(), protocolVersion);
             } catch (Exception e) {
                 log.error("Unable to write nbt data for item " + stack, e);
                 buf.resetWriterIndex();
-                NamedBinaryTagUtil.writeTag(buf, new CompoundTag());
+                NamedBinaryTagUtil.writeTag(buf, new CompoundTag(), protocolVersion);
             }
         } catch (Exception e) {
             log.error("Unable to write item on protocol version " + protocolVersion, e);
