@@ -34,6 +34,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Slf4j(topic = "Protocolize")
 public final class ItemStackSerializer {
 
+    private static final List<Integer> unknownItems = new ArrayList<>();
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
     private static final ComponentConverter CONVERTER = Protocolize.getService(ComponentConverterProvider.class)
         .platformConverter();
@@ -74,7 +75,8 @@ public final class ItemStackSerializer {
                 }
             }
             ItemType type = lookupItemType(id, durability, protocolVersion);
-            if (type == null) {
+            if (type == null && !unknownItems.contains(id)) { //prevent console spam by checking if already logged
+                unknownItems.add(id);
                 log.warn("Don't know what item " + id + " at protocol " + protocolVersion + " should be.");
             }
             ItemStack out = new ItemStack(type, amount, durability);

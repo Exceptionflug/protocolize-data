@@ -11,6 +11,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +33,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Accessors(fluent = true)
 public class OpenWindow extends AbstractPacket {
 
+    private static final List<String> unknownLegacyTypes = new ArrayList<>();
+    private static final List<Integer> unknownTypes = new ArrayList<>();
+
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x2D),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_9, MINECRAFT_1_12_2, 0x13),
@@ -48,8 +52,17 @@ public class OpenWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_LATEST, 0x31)
     );
 
+    public OpenWindow(int windowId, InventoryType inventoryType, String titleJson){
+        this.windowId = windowId;
+        this.inventoryType = inventoryType;
+        this.titleJson = titleJson;
+    }
+
     private int windowId;
     private InventoryType inventoryType;
+    protected int typeFallback;
+    protected String legacyTypeFallback;
+    protected int legacySizeFallback;
 
     /**
      * @since Protocol < 477: legacy text; Protocol >= 477: json component
@@ -65,7 +78,12 @@ public class OpenWindow extends AbstractPacket {
             int size = buf.readUnsignedByte();
             this.inventoryType = InventoryType.type(legacyId, size, protocolVersion);
             if (this.inventoryType == null) {
-                log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
+                legacyTypeFallback = legacyId;
+                legacySizeFallback = size;
+                if(!unknownLegacyTypes.contains(legacyId)) {
+                    unknownLegacyTypes.add(legacyId);
+                    log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
+                }
             }
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {
@@ -73,7 +91,11 @@ public class OpenWindow extends AbstractPacket {
             int id = ProtocolUtil.readVarInt(buf);
             this.inventoryType = InventoryType.type(id, protocolVersion);
             if (this.inventoryType == null) {
-                log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
+                typeFallback = id;
+                if(!unknownTypes.contains(id)) {
+                    unknownTypes.add(id);
+                    log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
+                }
             }
             this.titleJson = ProtocolUtil.readString(buf);
         }
@@ -83,12 +105,12 @@ public class OpenWindow extends AbstractPacket {
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion < MINECRAFT_1_14) {
             buf.writeByte(this.windowId & 0xFF);
-            ProtocolUtil.writeString(buf, Objects.requireNonNull(this.inventoryType.legacyTypeId(protocolVersion)));
+            ProtocolUtil.writeString(buf, this.inventoryType == null ? legacyTypeFallback : Objects.requireNonNull(this.inventoryType.legacyTypeId(protocolVersion)));
             ProtocolUtil.writeString(buf, this.titleJson);
-            buf.writeByte(this.inventoryType.shouldInventorySizeNotBeZero() ? this.inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0);
+            buf.writeByte(this.inventoryType == null ? legacySizeFallback : (this.inventoryType.shouldInventorySizeNotBeZero() ? this.inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0));
         } else {
             ProtocolUtil.writeVarInt(buf, this.windowId);
-            ProtocolUtil.writeVarInt(buf, this.inventoryType.getTypeId(protocolVersion));
+            ProtocolUtil.writeVarInt(buf, this.inventoryType == null ? typeFallback : this.inventoryType.getTypeId(protocolVersion));
             ProtocolUtil.writeString(buf, this.titleJson);
         }
     }
