@@ -39,7 +39,8 @@ public class UseItem extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_16_2, MINECRAFT_1_18_2, 0x2F),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19, MINECRAFT_1_19, 0x31),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_20_1, 0x32),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_LATEST, 0x35)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_2, 0x35),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_3, MINECRAFT_LATEST, 0x36)
     );
 
     private Hand hand;
