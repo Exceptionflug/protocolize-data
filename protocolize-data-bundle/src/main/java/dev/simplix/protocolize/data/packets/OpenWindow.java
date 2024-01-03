@@ -1,16 +1,19 @@
 package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.PacketDirection;
+import dev.simplix.protocolize.api.chat.ChatElement;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.inventory.InventoryType;
+import dev.simplix.protocolize.data.util.NamedBinaryTagUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,29 +55,25 @@ public class OpenWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_LATEST, 0x31)
     );
 
-    public OpenWindow(int windowId, InventoryType inventoryType, String titleJson){
+    public OpenWindow(int windowId, InventoryType inventoryType, ChatElement<?> title) {
         this.windowId = windowId;
         this.inventoryType = inventoryType;
-        this.titleJson = titleJson;
+        this.title = title;
     }
 
     private int windowId;
     private InventoryType inventoryType;
+    private ChatElement<?> title;
     protected int typeFallback;
     protected String legacyTypeFallback;
     protected int legacySizeFallback;
-
-    /**
-     * @since Protocol < 477: legacy text; Protocol >= 477: json component
-     */
-    private String titleJson;
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         if (protocolVersion < MINECRAFT_1_14) {
             this.windowId = buf.readUnsignedByte();
             String legacyId = ProtocolUtil.readString(buf);
-            this.titleJson = ProtocolUtil.readString(buf);
+            this.title = ChatElement.ofLegacyText(ProtocolUtil.readString(buf));
             int size = buf.readUnsignedByte();
             this.inventoryType = InventoryType.type(legacyId, size, protocolVersion);
             if (this.inventoryType == null) {
@@ -97,7 +96,15 @@ public class OpenWindow extends AbstractPacket {
                     log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
                 }
             }
-            this.titleJson = ProtocolUtil.readString(buf);
+            if (protocolVersion >= MINECRAFT_1_20_3) {
+                try {
+                    this.title = ChatElement.ofNbt(NamedBinaryTagUtil.readTag(buf, protocolVersion));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                this.title = ChatElement.ofJson(ProtocolUtil.readString(buf));
+            }
         }
     }
 
@@ -106,12 +113,20 @@ public class OpenWindow extends AbstractPacket {
         if (protocolVersion < MINECRAFT_1_14) {
             buf.writeByte(this.windowId & 0xFF);
             ProtocolUtil.writeString(buf, this.inventoryType == null ? legacyTypeFallback : Objects.requireNonNull(this.inventoryType.legacyTypeId(protocolVersion)));
-            ProtocolUtil.writeString(buf, this.titleJson);
+            ProtocolUtil.writeString(buf, this.title.asLegacyText());
             buf.writeByte(this.inventoryType == null ? legacySizeFallback : (this.inventoryType.shouldInventorySizeNotBeZero() ? this.inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0));
         } else {
             ProtocolUtil.writeVarInt(buf, this.windowId);
             ProtocolUtil.writeVarInt(buf, this.inventoryType == null ? typeFallback : this.inventoryType.getTypeId(protocolVersion));
-            ProtocolUtil.writeString(buf, this.titleJson);
+            if (protocolVersion >= MINECRAFT_1_20_3) {
+                try {
+                    NamedBinaryTagUtil.writeTag(buf, this.title.asNbt(), protocolVersion);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                ProtocolUtil.writeString(buf, this.title.asJson());
+            }
         }
     }
 

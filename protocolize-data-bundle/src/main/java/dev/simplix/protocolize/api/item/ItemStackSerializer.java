@@ -2,11 +2,10 @@ package dev.simplix.protocolize.api.item;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Multimap;
-import dev.simplix.protocolize.api.ComponentConverter;
 import dev.simplix.protocolize.api.Protocolize;
+import dev.simplix.protocolize.api.chat.ChatElement;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
-import dev.simplix.protocolize.api.providers.ComponentConverterProvider;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.DebugUtil;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
@@ -16,7 +15,6 @@ import dev.simplix.protocolize.data.mapping.LegacyItemProtocolIdMapping;
 import dev.simplix.protocolize.data.util.NamedBinaryTagUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
-import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.*;
 
 import java.io.IOException;
@@ -36,8 +34,6 @@ public final class ItemStackSerializer {
 
     private static final List<Integer> unknownItems = new ArrayList<>();
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
-    private static final ComponentConverter CONVERTER = Protocolize.getService(ComponentConverterProvider.class)
-        .platformConverter();
 
     private ItemStackSerializer() {
     }
@@ -60,18 +56,18 @@ public final class ItemStackSerializer {
                 return new ItemStack(ItemType.AIR, amount, durability);
             }
             CompoundTag tag = readItemTag(buf, protocolVersion);
-            String displayNameJson = null;
-            List<String> loreJson = readLoreJson(tag, protocolVersion);
-            if (protocolVersion >= MINECRAFT_1_13 && tag != null) {
+            ChatElement<?> displayName = null;
+            List<ChatElement<?>> lore = readLore(tag, protocolVersion);
+            if (protocolVersion >= MINECRAFT_1_13) {
                 IntTag damageTag = tag.getIntTag("Damage");
                 if (damageTag != null) {
                     durability = damageTag.asShort();
                 }
-                displayNameJson = extractDisplayName(tag);
-            } else if (tag != null) {
-                String displayName = extractDisplayName(tag);
-                if (displayName != null) {
-                    displayNameJson = CONVERTER.toJson(CONVERTER.fromLegacyText(displayName));
+                displayName = ChatElement.ofJson(extractDisplayName(tag));
+            } else {
+                String extracted = extractDisplayName(tag);
+                if (extracted != null) {
+                    displayName = ChatElement.ofLegacyText(extracted);
                 }
             }
             ItemType type = lookupItemType(id, durability, protocolVersion);
@@ -80,8 +76,8 @@ public final class ItemStackSerializer {
                 log.warn("Don't know what item " + id + " at protocol " + protocolVersion + " should be.");
             }
             ItemStack out = new ItemStack(type, amount, durability);
-            out.displayNameJson(displayNameJson);
-            out.loreJson(loreJson == null ? new ArrayList<>() : loreJson);
+            out.displayName(displayName);
+            out.lore(lore == null ? new ArrayList<>() : lore);
             out.nbtData(tag);
             out.hideFlags(readHideFlags(tag));
             return out;
@@ -135,7 +131,7 @@ public final class ItemStackSerializer {
         return 0;
     }
 
-    private static List<String> readLoreJson(CompoundTag tag, int protocolVersion) {
+    private static List<ChatElement<?>> readLore(CompoundTag tag, int protocolVersion) {
         if (tag == null)
             return null;
         CompoundTag display = tag.getCompoundTag("display");
@@ -149,9 +145,9 @@ public final class ItemStackSerializer {
         List<StringTag> tags = new ArrayList<>();
         lore.iterator().forEachRemaining(tags::add);
         if (protocolVersion < MINECRAFT_1_14) {
-            return tags.stream().map(stringTag -> CONVERTER.toJson(CONVERTER.fromLegacyText(stringTag.getValue()))).collect(Collectors.toList());
+            return tags.stream().map(stringTag -> ChatElement.ofLegacyText(stringTag.getValue())).collect(Collectors.toList());
         }
-        return tags.stream().map(StringTag::getValue).collect(Collectors.toList());
+        return tags.stream().map(stringTag -> ChatElement.ofJson(stringTag.getValue())).collect(Collectors.toList());
     }
 
     private static String extractDisplayName(CompoundTag tag) {
@@ -241,8 +237,8 @@ public final class ItemStackSerializer {
             if (protocolVersion >= MINECRAFT_1_13) {
                 stack.nbtData().put("Damage", new IntTag(durability));
             }
-            writeDisplayNameTag(stack.displayNameJson(), stack.nbtData(), protocolVersion);
-            writeLoreTag(stack.loreJson(), stack.nbtData(), protocolVersion);
+            writeDisplayNameTag(stack.displayName(), stack.nbtData(), protocolVersion);
+            writeLoreTag(stack.lore(), stack.nbtData(), protocolVersion);
             writeHideFlags(stack.hideFlags(), stack.nbtData());
             if (mapping instanceof AbstractLegacyItemNBTProtocolIdMapping) {
                 ((AbstractLegacyItemNBTProtocolIdMapping) mapping).apply(stack, protocolVersion);
@@ -267,8 +263,8 @@ public final class ItemStackSerializer {
         nbtData.put("HideFlags", new IntTag(hideFlags));
     }
 
-    private static void writeLoreTag(List<String> loreJson, CompoundTag nbtData, int protocolVersion) {
-        if (loreJson == null)
+    private static void writeLoreTag(List<ChatElement<?>> lore, CompoundTag nbtData, int protocolVersion) {
+        if (lore == null)
             return;
         CompoundTag display = nbtData.getCompoundTag("display");
         if (display == null) {
@@ -276,25 +272,25 @@ public final class ItemStackSerializer {
         }
         if (protocolVersion < MINECRAFT_1_14) {
             ListTag<StringTag> tag = new ListTag<>(StringTag.class);
-            tag.addAll(loreJson.stream().map(s -> new StringTag(CONVERTER.toLegacyText(CONVERTER.fromJson(s)))).collect(Collectors.toList()));
+            tag.addAll(lore.stream().map(s -> new StringTag(s.asLegacyText())).collect(Collectors.toList()));
             display.put("Lore", tag);
             nbtData.put("display", display);
         } else {
             ListTag<StringTag> tag = new ListTag<>(StringTag.class);
-            tag.addAll(loreJson.stream().map(StringTag::new).collect(Collectors.toList()));
+            tag.addAll(lore.stream().map(s -> new StringTag(s.disableItalic().asJson())).collect(Collectors.toList()));
             display.put("Lore", tag);
             nbtData.put("display", display);
         }
     }
 
-    private static void writeDisplayNameTag(String name, CompoundTag nbtData, int protocolVersion) {
+    private static void writeDisplayNameTag(ChatElement<?> name, CompoundTag nbtData, int protocolVersion) {
         if (name == null)
             return;
         CompoundTag display = nbtData.getCompoundTag("display");
         if (display == null) {
             display = new CompoundTag();
         }
-        final StringTag tag = new StringTag(protocolVersion >= MINECRAFT_1_13 ? name : CONVERTER.toLegacyText(CONVERTER.fromJson(name)));
+        final StringTag tag = new StringTag(protocolVersion >= MINECRAFT_1_13 ? name.asJson() : name.asLegacyText());
         display.put("Name", tag);
         nbtData.put("display", display);
     }
