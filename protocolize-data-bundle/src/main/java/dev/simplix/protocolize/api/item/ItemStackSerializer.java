@@ -277,7 +277,7 @@ public final class ItemStackSerializer {
             nbtData.put("display", display);
         } else {
             ListTag<StringTag> tag = new ListTag<>(StringTag.class);
-            tag.addAll(lore.stream().map(s -> new StringTag(s.disableItalic().asJson())).collect(Collectors.toList()));
+            tag.addAll(lore.stream().map(s -> new StringTag(s.asJson())).collect(Collectors.toList()));
             display.put("Lore", tag);
             nbtData.put("display", display);
         }
@@ -290,7 +290,7 @@ public final class ItemStackSerializer {
         if (display == null) {
             display = new CompoundTag();
         }
-        final StringTag tag = new StringTag(protocolVersion >= MINECRAFT_1_13 ? name.asJson() : name.asLegacyText());
+        final StringTag tag = new StringTag(protocolVersion >= MINECRAFT_1_13 ? name.disableItalic().asJson() : name.asLegacyText());
         display.put("Name", tag);
         nbtData.put("display", display);
     }
