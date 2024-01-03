@@ -63,7 +63,10 @@ public final class ItemStackSerializer {
                 if (damageTag != null) {
                     durability = damageTag.asShort();
                 }
-                displayName = ChatElement.ofJson(extractDisplayName(tag));
+                String extracted = extractDisplayName(tag);
+                if (extracted != null) {
+                    displayName = ChatElement.ofJson(extracted);
+                }
             } else {
                 String extracted = extractDisplayName(tag);
                 if (extracted != null) {
