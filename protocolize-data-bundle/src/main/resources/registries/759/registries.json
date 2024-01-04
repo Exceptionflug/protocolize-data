@@ -1268,7 +1268,7 @@
       "minecraft:granite_wall": {
         "protocol_id": 696
       },
-      "minecraft:grass": {
+      "minecraft:short_grass": {
         "protocol_id": 110
       },
       "minecraft:grass_block": {
@@ -5748,7 +5748,7 @@
       "minecraft:granite_wall": {
         "protocol_id": 355
       },
-      "minecraft:grass": {
+      "minecraft:short_grass": {
         "protocol_id": 160
       },
       "minecraft:grass_block": {

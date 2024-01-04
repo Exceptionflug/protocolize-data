@@ -3370,7 +3370,7 @@
             "minecraft:cobweb": {
                 "protocol_id": 94
             },
-            "minecraft:grass": {
+            "minecraft:short_grass": {
                 "protocol_id": 95
             },
             "minecraft:fern": {
@@ -6093,7 +6093,7 @@
             "minecraft:cobweb": {
                 "protocol_id": 88
             },
-            "minecraft:grass": {
+            "minecraft:short_grass": {
                 "protocol_id": 89
             },
             "minecraft:fern": {

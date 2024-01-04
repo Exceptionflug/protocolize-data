@@ -2779,7 +2779,7 @@
             "minecraft:cobweb": {
                 "protocol_id": 93
             },
-            "minecraft:grass": {
+            "minecraft:short_grass": {
                 "protocol_id": 94
             },
             "minecraft:fern": {
@@ -5187,7 +5187,7 @@
             "minecraft:cobweb": {
                 "protocol_id": 75
             },
-            "minecraft:grass": {
+            "minecraft:short_grass": {
                 "protocol_id": 76
             },
             "minecraft:fern": {
@@ -7899,7 +7899,7 @@
             "minecraft:taiga_grass": {
                 "protocol_id": 35
             },
-            "minecraft:grass": {
+            "minecraft:short_grass": {
                 "protocol_id": 36
             },
             "minecraft:void_start_platform": {
