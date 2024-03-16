@@ -73,7 +73,7 @@ public class OpenWindow extends AbstractPacket {
         if (protocolVersion < MINECRAFT_1_14) {
             this.windowId = buf.readUnsignedByte();
             String legacyId = ProtocolUtil.readString(buf);
-            this.title = ChatElement.ofLegacyText(ProtocolUtil.readString(buf));
+            this.title = ChatElement.ofJson(ProtocolUtil.readString(buf));
             int size = buf.readUnsignedByte();
             this.inventoryType = InventoryType.type(legacyId, size, protocolVersion);
             if (this.inventoryType == null) {
@@ -113,7 +113,7 @@ public class OpenWindow extends AbstractPacket {
         if (protocolVersion < MINECRAFT_1_14) {
             buf.writeByte(this.windowId & 0xFF);
             ProtocolUtil.writeString(buf, this.inventoryType == null ? legacyTypeFallback : Objects.requireNonNull(this.inventoryType.legacyTypeId(protocolVersion)));
-            ProtocolUtil.writeString(buf, this.title.asLegacyText());
+            ProtocolUtil.writeString(buf, this.title.asJson());
             buf.writeByte(this.inventoryType == null ? legacySizeFallback : (this.inventoryType.shouldInventorySizeNotBeZero() ? this.inventoryType.getTypicalSize(protocolVersion) & 0xFF : 0));
         } else {
             ProtocolUtil.writeVarInt(buf, this.windowId);
