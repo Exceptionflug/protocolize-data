@@ -2,6 +2,7 @@ package dev.simplix.protocolize.api.item;
 
 import com.google.common.collect.Multimap;
 import dev.simplix.protocolize.api.Protocolize;
+import dev.simplix.protocolize.api.chat.ChatElement;
 import dev.simplix.protocolize.api.item.component.*;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j(topic = "Protocolize")
 public final class StructuredItemStackSerializer {
@@ -77,10 +79,12 @@ public final class StructuredItemStackSerializer {
 
     private void populateComponentsFromDisplayNameAndLore(BaseItemStack stack) {
         if (stack.displayName() != null) {
-            stack.addComponent(CustomNameComponent.create(stack.displayName()));
+            stack.addComponent(CustomNameComponent.create(stack.displayName().disableItalic()));
         }
         if (stack.lore() != null && !stack.lore().isEmpty()) {
-            stack.addComponent(LoreComponent.create(stack.lore()));
+            stack.addComponent(LoreComponent.create(stack.lore().stream().
+                map(ChatElement::disableItalic)
+                .collect(Collectors.toList())));
         }
     }
 
