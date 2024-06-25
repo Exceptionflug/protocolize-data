@@ -9042,7 +9042,7 @@
             "minecraft:turtle_helmet": {
                 "protocol_id": 678
             },
-            "minecraft:scute": {
+            "minecraft:turtle_scute": {
                 "protocol_id": 679
             },
             "minecraft:flint_and_steel": {

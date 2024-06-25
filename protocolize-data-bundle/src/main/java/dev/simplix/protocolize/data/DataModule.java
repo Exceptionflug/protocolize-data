@@ -7,12 +7,15 @@ import dev.simplix.protocolize.api.Direction;
 import dev.simplix.protocolize.api.PacketDirection;
 import dev.simplix.protocolize.api.Protocol;
 import dev.simplix.protocolize.api.Protocolize;
+import dev.simplix.protocolize.api.item.component.*;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.module.ProtocolizeModule;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.providers.PacketListenerProvider;
 import dev.simplix.protocolize.api.providers.ProtocolRegistrationProvider;
+import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.api.util.ProtocolVersions;
+import dev.simplix.protocolize.data.item.component.*;
 import dev.simplix.protocolize.data.listeners.*;
 import dev.simplix.protocolize.data.packets.*;
 import dev.simplix.protocolize.data.packets.SoundEffect;
@@ -127,6 +130,30 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerPacket(PlayerPositionLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPositionLook.class);
         registrationProvider.registerPacket(PlayerLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerLook.class);
 
+        // ITEM STRUCTURED COMPONENTS
+        Protocolize.registerService(CustomDataComponent.Factory.class, CustomDataComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(CustomDataComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(ItemNameComponent.Factory.class, ItemNameComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(ItemNameComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(CustomNameComponent.Factory.class, CustomNameComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(CustomNameComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(LoreComponent.Factory.class, LoreComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(LoreComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(CustomModelDataComponent.Factory.class, CustomModelDataComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(CustomModelDataComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(DamageComponent.Factory.class, DamageComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(DamageComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(MaxDamageComponent.Factory.class, MaxDamageComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(MaxDamageComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(HideTooltipComponent.Factory.class, HideTooltipComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(HideTooltipComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(LeatherColorComponent.Factory.class, LeatherColorComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(LeatherColorComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(GameProfileComponent.Factory.class, GameProfileComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(GameProfileComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(MaxStackSizeComponent.Factory.class, MaxStackSizeComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(MaxStackSizeComponentImpl.Type.INSTANCE);
+
         PacketListenerProvider listenerProvider = Protocolize.listenerProvider();
         listenerProvider.registerListener(new CloseWindowListener(Direction.UPSTREAM));
         listenerProvider.registerListener(new CloseWindowListener(Direction.DOWNSTREAM));
@@ -137,5 +164,6 @@ public class DataModule implements ProtocolizeModule {
         listenerProvider.registerListener(new UseItemListener());
         listenerProvider.registerListener(new BlockPlacementListener());
     }
+
 
 }

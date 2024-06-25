@@ -8790,7 +8790,7 @@
       "minecraft:sculk_vein": {
         "protocol_id": 371
       },
-      "minecraft:scute": {
+      "minecraft:turtle_scute": {
         "protocol_id": 794
       },
       "minecraft:sea_lantern": {
@@ -14008,9 +14008,6 @@
       },
       "minecraft:entity.generic.swim": {
         "protocol_id": 551
-      },
-      "minecraft:entity.generic.wind_burst": {
-        "protocol_id": 1466
       },
       "minecraft:entity.ghast.ambient": {
         "protocol_id": 552

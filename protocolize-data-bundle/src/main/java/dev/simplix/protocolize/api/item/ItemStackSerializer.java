@@ -32,7 +32,8 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Slf4j(topic = "Protocolize")
 public final class ItemStackSerializer {
 
-    private static final List<Integer> unknownItems = new ArrayList<>();
+    private static final StructuredItemStackSerializer STRUCTURED_SERIALIZER = new StructuredItemStackSerializer();
+    private static final List<Integer> UNKNOWN_ITEMS = new ArrayList<>();
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
 
     private ItemStackSerializer() {
@@ -43,6 +44,9 @@ public final class ItemStackSerializer {
     public static ItemStack read(ByteBuf buf, int protocolVersion) {
         Preconditions.checkNotNull(buf, "Buf cannot be null");
         try {
+            if (protocolVersion >= MINECRAFT_1_20_5) {
+                return STRUCTURED_SERIALIZER.read(buf, protocolVersion);
+            }
             int id = readItemId(buf, protocolVersion);
             if (id == -1) {
                 return ItemStack.NO_DATA;
@@ -74,8 +78,8 @@ public final class ItemStackSerializer {
                 }
             }
             ItemType type = lookupItemType(id, durability, protocolVersion);
-            if (type == null && !unknownItems.contains(id)) { //prevent console spam by checking if already logged
-                unknownItems.add(id);
+            if (type == null && !UNKNOWN_ITEMS.contains(id)) { //prevent console spam by checking if already logged
+                UNKNOWN_ITEMS.add(id);
                 log.warn("Don't know what item " + id + " at protocol " + protocolVersion + " should be.");
             }
             ItemStack out = new ItemStack(type, amount, durability);
@@ -193,6 +197,10 @@ public final class ItemStackSerializer {
         Preconditions.checkNotNull(buf, "Buf cannot be null");
         Preconditions.checkNotNull(stack, "Stack cannot be null");
         try {
+            if (protocolVersion >= MINECRAFT_1_20_5) {
+                STRUCTURED_SERIALIZER.write(buf, stack, protocolVersion);
+                return;
+            }
             int protocolId;
             short durability = 0;
             ProtocolIdMapping mapping = null;
