@@ -33,7 +33,7 @@ public class DamageComponentImpl implements DamageComponent {
 
     @Override
     public StructuredComponentType<?> getType() {
-        return null;
+        return Type.INSTANCE;
     }
 
     public static class Type implements StructuredComponentType<DamageComponent>, DamageComponent.Factory {
