@@ -51,11 +51,25 @@ public class UseItem extends AbstractPacket {
      */
     private int sequence;
 
+    /**
+     * @since protocol version 767 (1.21)
+     */
+    private float yRot;
+    /**
+     * @since protocol version 767 (1.21)
+     */
+    private float xRot;
+
+
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         hand = Hand.handByProtocolId(ProtocolUtil.readVarInt(buf));
         if (protocolVersion >= MINECRAFT_1_19) {
             sequence = ProtocolUtil.readVarInt(buf);
+        }
+        if (protocolVersion >= MINECRAFT_1_21) {
+            yRot = buf.readFloat();
+            xRot = buf.readFloat();
         }
     }
 
@@ -64,6 +78,10 @@ public class UseItem extends AbstractPacket {
         ProtocolUtil.writeVarInt(buf, hand.protocolId());
         if (protocolVersion >= MINECRAFT_1_19) {
             ProtocolUtil.writeVarInt(buf, sequence);
+        }
+        if (protocolVersion >= MINECRAFT_1_21) {
+            buf.writeFloat(yRot);
+            buf.writeFloat(xRot);
         }
     }
 
