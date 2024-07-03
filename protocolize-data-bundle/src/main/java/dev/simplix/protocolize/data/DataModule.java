@@ -153,6 +153,10 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerItemStructuredComponentType(GameProfileComponentImpl.Type.INSTANCE);
         Protocolize.registerService(MaxStackSizeComponent.Factory.class, MaxStackSizeComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(MaxStackSizeComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(EnchantmentsComponent.Factory.class, EnchantmentsComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(EnchantmentsComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(MapIdComponent.Factory.class, MapIdComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(MapIdComponentImpl.Type.INSTANCE);
 
         PacketListenerProvider listenerProvider = Protocolize.listenerProvider();
         listenerProvider.registerListener(new CloseWindowListener(Direction.UPSTREAM));
