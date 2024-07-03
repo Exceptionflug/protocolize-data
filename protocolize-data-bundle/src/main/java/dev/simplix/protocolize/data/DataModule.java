@@ -155,6 +155,8 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerItemStructuredComponentType(MaxStackSizeComponentImpl.Type.INSTANCE);
         Protocolize.registerService(EnchantmentsComponent.Factory.class, EnchantmentsComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(EnchantmentsComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(EnchantmentsComponent.Factory.class, StoredEnchantmentsComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(StoredEnchantmentsComponentImpl.Type.INSTANCE);
         Protocolize.registerService(MapIdComponent.Factory.class, MapIdComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(MapIdComponentImpl.Type.INSTANCE);
 
