@@ -1,7 +1,6 @@
 package dev.simplix.protocolize.data.item.component;
 
 import dev.simplix.protocolize.api.chat.ChatElement;
-import dev.simplix.protocolize.api.item.component.ItemNameComponent;
 import dev.simplix.protocolize.api.item.component.LoreComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;

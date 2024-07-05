@@ -11,7 +11,6 @@ import dev.simplix.protocolize.api.mapping.ProtocolStringMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
-import dev.simplix.protocolize.api.util.ProtocolVersions;
 import dev.simplix.protocolize.data.Sound;
 import io.netty.buffer.ByteBuf;
 import lombok.*;

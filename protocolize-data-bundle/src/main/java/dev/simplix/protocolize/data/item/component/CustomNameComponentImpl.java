@@ -2,11 +2,9 @@ package dev.simplix.protocolize.data.item.component;
 
 import dev.simplix.protocolize.api.chat.ChatElement;
 import dev.simplix.protocolize.api.item.component.CustomNameComponent;
-import dev.simplix.protocolize.api.item.component.ItemNameComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
-import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.util.NamedBinaryTagUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;

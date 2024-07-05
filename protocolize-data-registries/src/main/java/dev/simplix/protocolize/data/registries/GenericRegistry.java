@@ -12,7 +12,7 @@ import java.util.Map;
  */
 @Getter
 @Accessors(fluent = true)
-public class SoundRegistry {
+public class GenericRegistry {
 
     private Map<String, RegistryEntry> entries;
 

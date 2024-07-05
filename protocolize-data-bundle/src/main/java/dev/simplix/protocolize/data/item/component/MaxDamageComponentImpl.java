@@ -1,6 +1,5 @@
 package dev.simplix.protocolize.data.item.component;
 
-import dev.simplix.protocolize.api.item.component.DamageComponent;
 import dev.simplix.protocolize.api.item.component.MaxDamageComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
@@ -24,7 +23,7 @@ public class MaxDamageComponentImpl implements MaxDamageComponent {
 
     @Override
     public void read(ByteBuf byteBuf, int i) throws Exception {
-       maxDamage = ProtocolUtil.readVarInt(byteBuf);
+        maxDamage = ProtocolUtil.readVarInt(byteBuf);
     }
 
     @Override
@@ -37,7 +36,7 @@ public class MaxDamageComponentImpl implements MaxDamageComponent {
         return Type.INSTANCE;
     }
 
-    public static class Type implements StructuredComponentType<MaxDamageComponent>, MaxDamageComponent.Factory {
+    public static class Type implements StructuredComponentType<MaxDamageComponent>, Factory {
 
         public static Type INSTANCE = new Type();
 
@@ -46,8 +45,8 @@ public class MaxDamageComponentImpl implements MaxDamageComponent {
         );
 
         @Override
-        public MaxDamageComponent create(int damage) {
-            return new MaxDamageComponentImpl(damage);
+        public MaxDamageComponent create(int value) {
+            return new MaxDamageComponentImpl(value);
         }
 
         @Override
