@@ -59,7 +59,7 @@ public class DataModule implements ProtocolizeModule {
                 registerIdMappings(registries.attributeRegistry().entries(), provider, protocolVersion, AttributeType.class);
                 registerIdMappings(registries.instrumentRegistry().entries(), provider, protocolVersion, Instrument.class);
             }
-            registerIdMappings(registries.soundRegistry().entries(), provider, protocolVersion, Sound.class);
+            registerStringMappings(registries.soundRegistry().entries(), provider, protocolVersion, Sound.class);
         } catch (Exception e) {
             log.error("Unable to register mappings for protocol version {}", protocolVersion, e);
         }
@@ -96,7 +96,8 @@ public class DataModule implements ProtocolizeModule {
             String name = type.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT);
             try {
                 T value = Enum.valueOf(enumClass, name);
-                provider.registerMapping(value, AbstractProtocolMapping.rangedStringMapping(protocolVersion, protocolVersion, type));
+                int protocolId = entries.get(type).protocolId();
+                provider.registerMapping(value, AbstractProtocolMapping.rangedStringMapping(protocolVersion, protocolVersion, type, protocolId));
             } catch (IllegalArgumentException e) {
                 log.warn("Don't know what {}: {} was at protocol {}", enumClass.getSimpleName(), name, protocolVersion);
             }

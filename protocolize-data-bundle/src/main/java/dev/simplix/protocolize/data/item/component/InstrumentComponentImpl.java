@@ -10,7 +10,6 @@ import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.Instrument;
-import dev.simplix.protocolize.data.Sound;
 import dev.simplix.protocolize.data.util.StructureComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
