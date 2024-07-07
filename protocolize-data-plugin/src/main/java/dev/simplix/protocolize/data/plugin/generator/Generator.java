@@ -1,6 +1,5 @@
 package dev.simplix.protocolize.data.plugin.generator;
 
-import dev.simplix.protocolize.data.registries.Registries;
 
 /**
  * Date: 23.08.2021
@@ -9,6 +8,8 @@ import dev.simplix.protocolize.data.registries.Registries;
  */
 public interface Generator {
 
-    void generate(Registries registries) throws Exception;
+    void generate() throws Exception;
+
+    String getName();
 
 }

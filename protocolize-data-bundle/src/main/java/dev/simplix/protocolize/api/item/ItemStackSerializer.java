@@ -80,7 +80,7 @@ public final class ItemStackSerializer {
             ItemType type = lookupItemType(id, durability, protocolVersion);
             if (type == null && !UNKNOWN_ITEMS.contains(id)) { //prevent console spam by checking if already logged
                 UNKNOWN_ITEMS.add(id);
-                log.warn("Don't know what item " + id + " at protocol " + protocolVersion + " should be.");
+                log.warn("Don't know what item {} at protocol {} should be.", id, protocolVersion);
             }
             ItemStack out = new ItemStack(type, amount, durability);
             out.displayName(displayName);
@@ -90,7 +90,7 @@ public final class ItemStackSerializer {
             return out;
         } catch (Exception e) {
             DebugUtil.writeDump(buf, e);
-            log.error("Unable to read item stack from buffer in protocol version " + protocolVersion, e);
+            log.error("Unable to read item stack from buffer in protocol version {}", protocolVersion, e);
             return ItemStack.NO_DATA;
         }
     }
@@ -223,7 +223,7 @@ public final class ItemStackSerializer {
                 } else {
                     buf.writeBoolean(false);
                 }
-                log.warn(stack.itemType().name() + " cannot be used on protocol version " + protocolVersion);
+                log.warn("{} cannot be used on protocol version {}", stack.itemType().name(), protocolVersion);
                 return;
             }
             if (protocolVersion < MINECRAFT_1_13_2) {
@@ -258,12 +258,12 @@ public final class ItemStackSerializer {
             try {
                 NamedBinaryTagUtil.writeTag(buf, stack.nbtData(), protocolVersion);
             } catch (Exception e) {
-                log.error("Unable to write nbt data for item " + stack, e);
+                log.error("Unable to write nbt data for item {}", stack, e);
                 buf.resetWriterIndex();
                 NamedBinaryTagUtil.writeTag(buf, new CompoundTag(), protocolVersion);
             }
         } catch (Exception e) {
-            log.error("Unable to write item on protocol version " + protocolVersion, e);
+            log.error("Unable to write item on protocol version {}", protocolVersion, e);
         }
     }
 

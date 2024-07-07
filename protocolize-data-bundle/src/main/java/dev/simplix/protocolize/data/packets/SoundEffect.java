@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 /**
  * Date: 20.12.2022

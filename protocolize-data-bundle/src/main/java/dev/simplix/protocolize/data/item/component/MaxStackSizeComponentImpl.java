@@ -1,6 +1,5 @@
 package dev.simplix.protocolize.data.item.component;
 
-import dev.simplix.protocolize.api.item.component.LeatherColorComponent;
 import dev.simplix.protocolize.api.item.component.MaxStackSizeComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
@@ -23,12 +22,12 @@ public class MaxStackSizeComponentImpl implements MaxStackSizeComponent {
     private int maxStackSize;
 
     @Override
-    public void read(ByteBuf byteBuf, int i) throws Exception {
+    public void read(ByteBuf byteBuf, int protocolVersion) throws Exception {
         maxStackSize = ProtocolUtil.readVarInt(byteBuf);
     }
 
     @Override
-    public void write(ByteBuf byteBuf, int i) throws Exception {
+    public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
         ProtocolUtil.writeVarInt(byteBuf, maxStackSize);
     }
 
@@ -37,7 +36,7 @@ public class MaxStackSizeComponentImpl implements MaxStackSizeComponent {
         return Type.INSTANCE;
     }
 
-    public static class Type implements StructuredComponentType<MaxStackSizeComponent>, MaxStackSizeComponent.Factory {
+    public static class Type implements StructuredComponentType<MaxStackSizeComponent>, Factory {
 
         public static Type INSTANCE = new Type();
 

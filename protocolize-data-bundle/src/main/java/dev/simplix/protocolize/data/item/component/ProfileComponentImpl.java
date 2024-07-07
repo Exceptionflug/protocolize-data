@@ -1,7 +1,6 @@
 package dev.simplix.protocolize.data.item.component;
 
-import dev.simplix.protocolize.api.item.component.DamageComponent;
-import dev.simplix.protocolize.api.item.component.GameProfileComponent;
+import dev.simplix.protocolize.api.item.component.ProfileComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
@@ -17,11 +16,13 @@ import java.util.List;
 import java.util.UUID;
 
 import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
+import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
+import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
 import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
-public class GameProfileComponentImpl implements GameProfileComponent {
+public class ProfileComponentImpl implements ProfileComponent {
 
     private String name;
     private UUID uniqueId;
@@ -71,17 +72,18 @@ public class GameProfileComponentImpl implements GameProfileComponent {
         return Type.INSTANCE;
     }
 
-    public static class Type implements StructuredComponentType<GameProfileComponent>, GameProfileComponent.Factory {
+    public static class Type implements StructuredComponentType<ProfileComponent>, ProfileComponent.Factory {
 
         public static Type INSTANCE = new Type();
 
         private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 46)
+            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 47),
+            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 46)
         );
 
         @Override
-        public GameProfileComponent create(String name, UUID uniqueId, List<Property> properties) {
-            return new GameProfileComponentImpl(name, uniqueId, properties);
+        public ProfileComponent create(String name, UUID uniqueId, List<Property> properties) {
+            return new ProfileComponentImpl(name, uniqueId, properties);
         }
 
         @Override
@@ -95,8 +97,8 @@ public class GameProfileComponentImpl implements GameProfileComponent {
         }
 
         @Override
-        public GameProfileComponent createEmpty() {
-            return new GameProfileComponentImpl(null, null, null);
+        public ProfileComponent createEmpty() {
+            return new ProfileComponentImpl(null, null, null);
         }
 
     }

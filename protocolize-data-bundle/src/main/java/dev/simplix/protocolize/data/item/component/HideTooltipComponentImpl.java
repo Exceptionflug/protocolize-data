@@ -27,7 +27,7 @@ public class HideTooltipComponentImpl implements HideTooltipComponent {
         return Type.INSTANCE;
     }
 
-    public static class Type implements StructuredComponentType<HideTooltipComponent>, HideTooltipComponent.Factory {
+    public static class Type implements StructuredComponentType<HideTooltipComponent>, Factory {
 
         public static Type INSTANCE = new Type();
 

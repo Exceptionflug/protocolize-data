@@ -2,7 +2,6 @@ package dev.simplix.protocolize.data.packets;
 
 import dev.simplix.protocolize.api.Hand;
 import dev.simplix.protocolize.api.PacketDirection;
-import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;

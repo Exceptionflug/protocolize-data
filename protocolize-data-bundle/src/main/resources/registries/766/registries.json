@@ -13788,13 +13788,13 @@
       "minecraft:block.trial_spawner.ambient": {
         "protocol_id": 684
       },
-      "minecraft:block.trial_spawner.ambient_charged": {
+      "minecraft:block.trial_spawner.ambient_ominous": {
         "protocol_id": 685
       },
       "minecraft:block.trial_spawner.break": {
         "protocol_id": 673
       },
-      "minecraft:block.trial_spawner.charge_activate": {
+      "minecraft:block.trial_spawner.ominous_activate": {
         "protocol_id": 683
       },
       "minecraft:block.trial_spawner.close_shutter": {

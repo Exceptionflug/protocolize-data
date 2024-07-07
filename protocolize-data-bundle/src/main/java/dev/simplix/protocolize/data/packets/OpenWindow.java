@@ -82,7 +82,7 @@ public class OpenWindow extends AbstractPacket {
                 legacySizeFallback = size;
                 if(!unknownLegacyTypes.contains(legacyId)) {
                     unknownLegacyTypes.add(legacyId);
-                    log.warn("Unknown inventory type " + legacyId + " in protocol version " + protocolVersion + " for requested size " + size);
+                    log.warn("Unknown inventory type {} in protocol version {} for requested size {}", legacyId, protocolVersion, size);
                 }
             }
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
@@ -94,7 +94,7 @@ public class OpenWindow extends AbstractPacket {
                 typeFallback = id;
                 if(!unknownTypes.contains(id)) {
                     unknownTypes.add(id);
-                    log.warn("Unknown inventory type " + id + " in protocol version " + protocolVersion);
+                    log.warn("Unknown inventory type {} in protocol version {}", id, protocolVersion);
                 }
             }
             if (protocolVersion >= MINECRAFT_1_20_3) {

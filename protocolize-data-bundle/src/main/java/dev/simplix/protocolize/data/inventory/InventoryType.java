@@ -118,7 +118,7 @@ public enum InventoryType {
                 return mapping.typicalSize();
             }
         }
-        log.warn("[Protocolize] Unable to find typical inventory size of " + name() + " in version " + protocolVersion);
+        log.warn("[Protocolize] Unable to find typical inventory size of {} in version {}", name(), protocolVersion);
         return -1;
     }
 
