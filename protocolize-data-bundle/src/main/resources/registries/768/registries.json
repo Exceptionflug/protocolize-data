@@ -5186,7 +5186,7 @@
     },
     "protocol_id": 62
   },
-  "minecraft:enchantment_effect_component_type": {
+  "minecraft:enchantment": {
     "entries": {
       "minecraft:ammo_use": {
         "protocol_id": 13

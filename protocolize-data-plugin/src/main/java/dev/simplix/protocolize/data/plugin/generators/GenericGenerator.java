@@ -31,6 +31,9 @@ public class GenericGenerator implements Generator {
 
     @Override
     public void generate() throws Exception {
+        if (registry == null) {
+            return;
+        }
         new ByteBuddy(ClassFileVersion.JAVA_V8).makeEnumeration(registry.entries().keySet()
                 .stream().map(s -> s.substring("minecraft:".length()).replace(".", "_").toUpperCase(Locale.ROOT)).collect(Collectors.toList()))
             .name("dev.simplix.protocolize.data." + name)
