@@ -5109,6 +5109,35 @@
     },
     "protocol_id": 66
   },
+    "minecraft:instrument": {
+        "entries": {
+            "minecraft:admire_goat_horn": {
+                "protocol_id": 4
+            },
+            "minecraft:call_goat_horn": {
+                "protocol_id": 5
+            },
+            "minecraft:dream_goat_horn": {
+                "protocol_id": 7
+            },
+            "minecraft:feel_goat_horn": {
+                "protocol_id": 3
+            },
+            "minecraft:ponder_goat_horn": {
+                "protocol_id": 0
+            },
+            "minecraft:seek_goat_horn": {
+                "protocol_id": 2
+            },
+            "minecraft:sing_goat_horn": {
+                "protocol_id": 1
+            },
+            "minecraft:yearn_goat_horn": {
+                "protocol_id": 6
+            }
+        },
+        "protocol_id": 62
+    },
   "minecraft:decorated_pot_pattern": {
     "entries": {
       "minecraft:angler": {
