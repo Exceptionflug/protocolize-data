@@ -25,7 +25,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class PlayerRotation extends AbstractPacket {
+public class PlayerLook extends AbstractPacket {
+
+    /* ServerboundMovePlayerPacket.Rot */
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x05),
@@ -57,8 +59,8 @@ public class PlayerRotation extends AbstractPacket {
         this.pitch = buf.readFloat();
         if(protocolVersion >= MINECRAFT_1_21_2){
             short flags = buf.readUnsignedByte();
-            this.onGround = PlayerPositionRotation.unpackOnGround(flags);
-            this.horizontalCollision = PlayerPositionRotation.unpackHorizontalCollision(flags);
+            this.onGround = PlayerPositionLook.unpackOnGround(flags);
+            this.horizontalCollision = PlayerPositionLook.unpackHorizontalCollision(flags);
         } else {
             this.onGround = buf.readBoolean();
         }
@@ -69,7 +71,7 @@ public class PlayerRotation extends AbstractPacket {
         buf.writeFloat(this.yaw);
         buf.writeFloat(this.pitch);
         if(protocolVersion >= MINECRAFT_1_21_2){
-            buf.writeByte(PlayerPositionRotation.packFlags(this.onGround, this.horizontalCollision));
+            buf.writeByte(PlayerPositionLook.packFlags(this.onGround, this.horizontalCollision));
         } else {
             buf.writeBoolean(this.onGround);
         }

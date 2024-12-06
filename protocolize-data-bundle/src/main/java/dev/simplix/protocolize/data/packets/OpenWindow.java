@@ -34,7 +34,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class OpenScreen extends AbstractPacket {
+public class OpenWindow extends AbstractPacket {
+
+    /* ClientboundOpenScreenPacket */
 
     private static final List<String> unknownLegacyTypes = new ArrayList<>();
     private static final List<Integer> unknownTypes = new ArrayList<>();
@@ -57,7 +59,7 @@ public class OpenScreen extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_LATEST, 0x35)
     );
 
-    public OpenScreen(int windowId, InventoryType inventoryType, ChatElement<?> title) {
+    public OpenWindow(int windowId, InventoryType inventoryType, ChatElement<?> title) {
         this.windowId = windowId;
         this.inventoryType = inventoryType;
         this.title = title;

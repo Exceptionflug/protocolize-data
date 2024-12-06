@@ -116,26 +116,26 @@ public class DataModule implements ProtocolizeModule {
             return;
         }
         // CLIENTBOUND
-        registrationProvider.registerPacket(ContainerSetContent.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ContainerSetContent.class);
-        registrationProvider.registerPacket(ContainerSetSlot.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ContainerSetSlot.class);
-        registrationProvider.registerPacket(SetCarriedItem.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SetCarriedItem.class);
-        registrationProvider.registerPacket(ContainerSetData.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ContainerSetData.class);
-        registrationProvider.registerPacket(OpenScreen.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, OpenScreen.class);
+        registrationProvider.registerPacket(WindowItems.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, WindowItems.class);
+        registrationProvider.registerPacket(SetSlot.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SetSlot.class);
+        registrationProvider.registerPacket(HeldItemChange.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, HeldItemChange.class);
+        registrationProvider.registerPacket(WindowProperty.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, WindowProperty.class);
+        registrationProvider.registerPacket(OpenWindow.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, OpenWindow.class);
         registrationProvider.registerPacket(ConfirmTransaction.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ConfirmTransaction.class);
-        registrationProvider.registerPacket(ContainerClose.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, ContainerClose.class);
+        registrationProvider.registerPacket(CloseWindow.CLIENTBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, CloseWindow.class);
         registrationProvider.registerPacket(NamedSoundEffect.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, NamedSoundEffect.class);
         registrationProvider.registerPacket(SoundEffect.MAPPINGS, Protocol.PLAY, PacketDirection.CLIENTBOUND, SoundEffect.class);
 
         // SERVERBOUND
         registrationProvider.registerPacket(UseItem.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, UseItem.class);
-        registrationProvider.registerPacket(SetCarriedItem.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, SetCarriedItem.class);
-        registrationProvider.registerPacket(UseItemOn.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, UseItemOn.class);
+        registrationProvider.registerPacket(HeldItemChange.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, HeldItemChange.class);
+        registrationProvider.registerPacket(BlockPlacement.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, BlockPlacement.class);
         registrationProvider.registerPacket(ConfirmTransaction.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ConfirmTransaction.class);
-        registrationProvider.registerPacket(ContainerClick.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ContainerClick.class);
-        registrationProvider.registerPacket(ContainerClose.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ContainerClose.class);
+        registrationProvider.registerPacket(ClickWindow.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, ClickWindow.class);
+        registrationProvider.registerPacket(CloseWindow.SERVERBOUND_MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, CloseWindow.class);
         registrationProvider.registerPacket(PlayerPosition.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPosition.class);
-        registrationProvider.registerPacket(PlayerPositionRotation.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPositionRotation.class);
-        registrationProvider.registerPacket(PlayerRotation.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerRotation.class);
+        registrationProvider.registerPacket(PlayerPositionLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerPositionLook.class);
+        registrationProvider.registerPacket(PlayerLook.MAPPINGS, Protocol.PLAY, PacketDirection.SERVERBOUND, PlayerLook.class);
 
         // ITEM STRUCTURED COMPONENTS
         Protocolize.registerService(AttributeModifiersComponent.Factory.class, AttributeModifiersComponentImpl.Type.INSTANCE);

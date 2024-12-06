@@ -5,21 +5,21 @@ import dev.simplix.protocolize.api.listener.AbstractPacketListener;
 import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
 import dev.simplix.protocolize.api.player.ProtocolizePlayer;
-import dev.simplix.protocolize.data.packets.PlayerPositionRotation;
+import dev.simplix.protocolize.data.packets.PlayerPositionLook;
 
 /**
  * Date: 29.08.2021
  *
  * @author Exceptionflug
  */
-public final class PlayerPositionRotationListener extends AbstractPacketListener<PlayerPositionRotation> {
+public final class PlayerPositionRotationListener extends AbstractPacketListener<PlayerPositionLook> {
 
     public PlayerPositionRotationListener() {
-        super(PlayerPositionRotation.class, Direction.UPSTREAM, 0);
+        super(PlayerPositionLook.class, Direction.UPSTREAM, 0);
     }
 
     @Override
-    public void packetReceive(PacketReceiveEvent<PlayerPositionRotation> event) {
+    public void packetReceive(PacketReceiveEvent<PlayerPositionLook> event) {
         ProtocolizePlayer player = event.player();
         if (player != null) {
             player.location().x(event.packet().location().x());
@@ -31,7 +31,7 @@ public final class PlayerPositionRotationListener extends AbstractPacketListener
     }
 
     @Override
-    public void packetSend(PacketSendEvent<PlayerPositionRotation> packetSendEvent) {
+    public void packetSend(PacketSendEvent<PlayerPositionLook> packetSendEvent) {
 
     }
 }

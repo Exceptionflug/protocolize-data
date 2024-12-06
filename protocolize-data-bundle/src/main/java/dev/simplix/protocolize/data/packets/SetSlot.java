@@ -29,7 +29,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class ContainerSetSlot extends AbstractPacket {
+public class SetSlot extends AbstractPacket {
+
+    /* ClientboundContainerSetSlotPacket */
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x2F),
@@ -59,8 +61,8 @@ public class ContainerSetSlot extends AbstractPacket {
      */
     private int stateId;
 
-    public ContainerSetSlot(byte windowId, short slot, BaseItemStack itemStack,
-                            int stateId) {
+    public SetSlot(byte windowId, short slot, BaseItemStack itemStack,
+                   int stateId) {
         this.windowId = windowId;
         this.slot = slot;
         this.itemStack = itemStack;
@@ -103,7 +105,7 @@ public class ContainerSetSlot extends AbstractPacket {
         return this.itemStack;
     }
 
-    public ContainerSetSlot itemStack(BaseItemStack stack) {
+    public SetSlot itemStack(BaseItemStack stack) {
         this.lazyBuffer = LazyBuffer.empty();
         this.itemStack = stack;
         return this;

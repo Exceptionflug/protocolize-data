@@ -26,7 +26,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class PlayerPositionRotation extends AbstractPacket {
+public class PlayerPositionLook extends AbstractPacket {
+
+    /* ServerboundMovePlayerPacket.PosRot */
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x06),

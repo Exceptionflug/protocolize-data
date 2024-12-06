@@ -33,7 +33,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class ContainerClick extends AbstractPacket {
+public class ClickWindow extends AbstractPacket {
+
+    /* ServerboundContainerClickPacket */
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x0E),

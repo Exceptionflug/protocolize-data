@@ -25,7 +25,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class SetCarriedItem extends AbstractPacket {
+public class HeldItemChange extends AbstractPacket {
+
+    /* ClientboundSetCarriedItemPacket */
 
     public static final List<ProtocolIdMapping> CLIENTBOUND_MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x09),

@@ -30,7 +30,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class ContainerSetContent extends AbstractPacket {
+public class WindowItems extends AbstractPacket {
+
+    /* ClientboundContainerSetContentPacket */
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x30),
@@ -65,7 +67,7 @@ public class ContainerSetContent extends AbstractPacket {
      */
     private int stateId;
 
-    public ContainerSetContent(int windowId, List<BaseItemStack> items, int stateId) {
+    public WindowItems(int windowId, List<BaseItemStack> items, int stateId) {
         this.windowId = windowId;
         this.items = items;
         this.count = items.size();

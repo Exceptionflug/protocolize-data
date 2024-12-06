@@ -10,9 +10,9 @@ import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
 import dev.simplix.protocolize.api.util.ProtocolVersions;
 import dev.simplix.protocolize.data.inventory.InventoryType;
-import dev.simplix.protocolize.data.packets.ContainerClick;
+import dev.simplix.protocolize.data.packets.ClickWindow;
 import dev.simplix.protocolize.data.packets.ConfirmTransaction;
-import dev.simplix.protocolize.data.packets.ContainerSetSlot;
+import dev.simplix.protocolize.data.packets.SetSlot;
 
 import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_17;
 
@@ -21,15 +21,15 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_17;
  *
  * @author Exceptionflug
  */
-public final class ContainerClickListener extends AbstractPacketListener<ContainerClick> {
+public final class ContainerClickListener extends AbstractPacketListener<ClickWindow> {
 
     public ContainerClickListener() {
-        super(ContainerClick.class, Direction.UPSTREAM, 0);
+        super(ClickWindow.class, Direction.UPSTREAM, 0);
     }
 
     @Override
-    public void packetReceive(PacketReceiveEvent<ContainerClick> event) {
-        ContainerClick clickWindow = event.packet();
+    public void packetReceive(PacketReceiveEvent<ClickWindow> event) {
+        ClickWindow clickWindow = event.packet();
         if (event.player() == null) {
             return;
         }
@@ -76,19 +76,19 @@ public final class ContainerClickListener extends AbstractPacketListener<Contain
             if (event.player().protocolVersion() < MINECRAFT_1_17) {
                 event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
             }
-            event.player().sendPacket(new ContainerSetSlot((byte) 0, (short) (clickType.button() + 36), ItemStack.NO_DATA, 0));
+            event.player().sendPacket(new SetSlot((byte) 0, (short) (clickType.button() + 36), ItemStack.NO_DATA, 0));
         } else if (clickType.name().startsWith("SHIFT_")) {
             if (event.player().protocolVersion() < MINECRAFT_1_17) {
                 event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
             }
-            event.player().sendPacket(new ContainerSetSlot((byte) 0, (short) 44, ItemStack.NO_DATA, 0));
+            event.player().sendPacket(new SetSlot((byte) 0, (short) 44, ItemStack.NO_DATA, 0));
         } else {
-            event.player().sendPacket(new ContainerSetSlot((byte) -1, (short) -1, ItemStack.NO_DATA, 0));
+            event.player().sendPacket(new SetSlot((byte) -1, (short) -1, ItemStack.NO_DATA, 0));
         }
     }
 
     @Override
-    public void packetSend(PacketSendEvent<ContainerClick> packetSendEvent) {
+    public void packetSend(PacketSendEvent<ClickWindow> packetSendEvent) {
 
     }
 
