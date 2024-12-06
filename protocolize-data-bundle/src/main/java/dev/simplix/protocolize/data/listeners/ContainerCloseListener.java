@@ -6,21 +6,21 @@ import dev.simplix.protocolize.api.inventory.InventoryClose;
 import dev.simplix.protocolize.api.listener.AbstractPacketListener;
 import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
-import dev.simplix.protocolize.data.packets.CloseWindow;
+import dev.simplix.protocolize.data.packets.ContainerClose;
 
 /**
  * Date: 28.08.2021
  *
  * @author Exceptionflug
  */
-public final class CloseWindowListener extends AbstractPacketListener<CloseWindow> {
+public final class ContainerCloseListener extends AbstractPacketListener<ContainerClose> {
 
-    public CloseWindowListener(Direction direction) {
-        super(CloseWindow.class, direction, 0);
+    public ContainerCloseListener(Direction direction) {
+        super(ContainerClose.class, direction, 0);
     }
 
     @Override
-    public void packetReceive(PacketReceiveEvent<CloseWindow> event) {
+    public void packetReceive(PacketReceiveEvent<ContainerClose> event) {
         if (event.player() == null) {
             return;
         }
@@ -34,7 +34,7 @@ public final class CloseWindowListener extends AbstractPacketListener<CloseWindo
     }
 
     @Override
-    public void packetSend(PacketSendEvent<CloseWindow> packetSendEvent) {
+    public void packetSend(PacketSendEvent<ContainerClose> packetSendEvent) {
     }
 
 }

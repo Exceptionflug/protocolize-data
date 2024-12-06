@@ -2,22 +2,14 @@ package dev.simplix.protocolize.data.item.component;
 
 import dev.simplix.protocolize.api.item.component.BlockStateComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
@@ -66,11 +58,6 @@ public class BlockStateComponentImpl implements BlockStateComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 53),
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 52)
-        );
-
         @Override
         public BlockStateComponent create(Map<String, String> properties) {
             return new BlockStateComponentImpl(properties);
@@ -79,11 +66,6 @@ public class BlockStateComponentImpl implements BlockStateComponent {
         @Override
         public String getName() {
             return "minecraft:block_state";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

@@ -55,7 +55,8 @@ public class SoundEffect extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_1_20_1, 0x62),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_2, 0x64),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_3, MINECRAFT_1_20_4, 0x66),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 0x68)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_21, 0x68),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_LATEST, 0x6F)
     );
 
     @Setter(AccessLevel.NONE)
@@ -172,7 +173,7 @@ public class SoundEffect extends AbstractPacket {
     private void lookUpSoundId(int protocolVersion) {
         if (this.supportedSound == null) {
             throw new IllegalStateException("Packet holds no sound information");
-        }
+                    }
         ProtocolMapping mapping = MAPPING_PROVIDER.mapping(supportedSound, protocolVersion);
         if (!(mapping instanceof ProtocolStringMapping)) {
             throw new IllegalArgumentException("Unable to play sound effect " + supportedSound.name() +

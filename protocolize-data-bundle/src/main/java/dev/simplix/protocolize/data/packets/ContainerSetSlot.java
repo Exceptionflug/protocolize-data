@@ -29,7 +29,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class SetSlot extends AbstractPacket {
+public class ContainerSetSlot extends AbstractPacket {
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x2F),
@@ -50,7 +50,7 @@ public class SetSlot extends AbstractPacket {
     @Setter(AccessLevel.NONE)
     private LazyBuffer lazyBuffer = LazyBuffer.empty();
 
-    private byte windowId;
+    private int windowId;
     private short slot;
     private BaseItemStack itemStack = ItemStack.NO_DATA;
 
@@ -59,8 +59,8 @@ public class SetSlot extends AbstractPacket {
      */
     private int stateId;
 
-    public SetSlot(byte windowId, short slot, BaseItemStack itemStack,
-                   int stateId) {
+    public ContainerSetSlot(byte windowId, short slot, BaseItemStack itemStack,
+                            int stateId) {
         this.windowId = windowId;
         this.slot = slot;
         this.itemStack = itemStack;
@@ -69,7 +69,7 @@ public class SetSlot extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        this.windowId = buf.readByte();
+        this.windowId = (protocolVersion >= MINECRAFT_1_21_2) ? ProtocolUtil.readVarInt(buf) : buf.readByte();
         if (protocolVersion >= MINECRAFT_1_17_1) {
             this.stateId = ProtocolUtil.readVarInt(buf);
         }
@@ -84,7 +84,11 @@ public class SetSlot extends AbstractPacket {
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(this.windowId);
+        if(protocolVersion >= MINECRAFT_1_21_2) {
+            ProtocolUtil.writeVarInt(buf, this.windowId);
+        } else {
+            buf.writeByte(this.windowId & 0xFF);
+        }
         if (protocolVersion >= MINECRAFT_1_17_1) {
             ProtocolUtil.writeVarInt(buf, this.stateId);
         }
@@ -99,7 +103,7 @@ public class SetSlot extends AbstractPacket {
         return this.itemStack;
     }
 
-    public SetSlot itemStack(BaseItemStack stack) {
+    public ContainerSetSlot itemStack(BaseItemStack stack) {
         this.lazyBuffer = LazyBuffer.empty();
         this.itemStack = stack;
         return this;

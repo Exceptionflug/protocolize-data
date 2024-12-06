@@ -3,24 +3,19 @@ package dev.simplix.protocolize.data.item.component;
 import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.item.component.EnchantmentsComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.Enchantment;
+import dev.simplix.protocolize.data.util.StructuredComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
@@ -50,7 +45,7 @@ public class EnchantmentsComponentImpl implements EnchantmentsComponent {
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
             ProtocolMapping mapping = MAPPING_PROVIDER.mapping(entry.getKey(), protocolVersion);
             if (!(mapping instanceof ProtocolIdMapping)) {
-                log.warn("{} cannot be used on protocol version {}", entry.getKey().name(), protocolVersion);
+                StructuredComponentUtil.logMappingWarning(entry.getKey().name(), protocolVersion);
                 ProtocolUtil.writeVarInt(byteBuf, 0);
             } else {
                 ProtocolUtil.writeVarInt(byteBuf, ((ProtocolIdMapping) mapping).id());
@@ -84,10 +79,6 @@ public class EnchantmentsComponentImpl implements EnchantmentsComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 9)
-        );
-
         @Override
         public EnchantmentsComponent create(Map<Enchantment, Integer> enchantments) {
             return new EnchantmentsComponentImpl(enchantments, true);
@@ -101,11 +92,6 @@ public class EnchantmentsComponentImpl implements EnchantmentsComponent {
         @Override
         public String getName() {
             return "minecraft:enchantments";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

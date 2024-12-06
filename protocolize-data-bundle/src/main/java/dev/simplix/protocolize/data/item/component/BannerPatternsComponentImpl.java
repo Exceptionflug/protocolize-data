@@ -4,21 +4,14 @@ import dev.simplix.protocolize.api.item.BannerLayer;
 import dev.simplix.protocolize.api.item.DyeColor;
 import dev.simplix.protocolize.api.item.component.BannerPatternsComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
@@ -81,11 +74,6 @@ public class BannerPatternsComponentImpl implements BannerPatternsComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 49),
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 48)
-        );
-
         @Override
         public BannerPatternsComponent create(List<BannerLayer> layers) {
             return new BannerPatternsComponentImpl(layers);
@@ -96,10 +84,6 @@ public class BannerPatternsComponentImpl implements BannerPatternsComponent {
             return "minecraft:banner_patterns";
         }
 
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
-        }
 
         @Override
         public BannerPatternsComponent createEmpty() {

@@ -7,7 +7,7 @@ import dev.simplix.protocolize.api.item.BaseItemStack;
 import dev.simplix.protocolize.api.listener.AbstractPacketListener;
 import dev.simplix.protocolize.api.listener.PacketReceiveEvent;
 import dev.simplix.protocolize.api.listener.PacketSendEvent;
-import dev.simplix.protocolize.data.packets.BlockPlacement;
+import dev.simplix.protocolize.data.packets.UseItemOn;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author Exceptionflug
  */
 @Slf4j
-public final class BlockPlacementListener extends AbstractPacketListener<BlockPlacement> {
+public final class UseItemOnListener extends AbstractPacketListener<UseItemOn> {
 
-    public BlockPlacementListener() {
-        super(BlockPlacement.class, Direction.UPSTREAM, 0);
+    public UseItemOnListener() {
+        super(UseItemOn.class, Direction.UPSTREAM, 0);
     }
 
     @Override
-    public void packetReceive(PacketReceiveEvent<BlockPlacement> event) {
+    public void packetReceive(PacketReceiveEvent<UseItemOn> event) {
         if (event.player() == null) {
             return;
         }
@@ -49,7 +49,7 @@ public final class BlockPlacementListener extends AbstractPacketListener<BlockPl
     }
 
     @Override
-    public void packetSend(PacketSendEvent<BlockPlacement> packetSendEvent) {
+    public void packetSend(PacketSendEvent<UseItemOn> packetSendEvent) {
 
     }
 

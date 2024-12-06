@@ -32,7 +32,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class BlockPlacement extends AbstractPacket {
+public class UseItemOn extends AbstractPacket {
 
     public final static List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x08),
@@ -46,7 +46,9 @@ public class BlockPlacement extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_1, MINECRAFT_1_20_1, 0x31),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_2, 0x34),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_3, MINECRAFT_1_20_4, 0x35),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 0x38)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_21_1, 0x38),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_1_21_3, 0x3A),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_4, MINECRAFT_LATEST, 0x3C)
     );
 
     private BlockPosition position;
@@ -56,6 +58,7 @@ public class BlockPlacement extends AbstractPacket {
     private float hitVecY;
     private float hitVecZ;
     private boolean insideBlock;
+    private boolean worldBorderHit;
 
     /**
      * @since protocol version 759 (1.19)
@@ -100,6 +103,9 @@ public class BlockPlacement extends AbstractPacket {
             hitVecY = buf.readFloat();
             hitVecZ = buf.readFloat();
             insideBlock = buf.readBoolean();
+            if(protocolVersion >= MINECRAFT_1_21_2) {
+                worldBorderHit = buf.readBoolean();
+            }
             if (protocolVersion >= MINECRAFT_1_19) {
                 sequence = ProtocolUtil.readVarInt(buf);
             }
@@ -137,6 +143,9 @@ public class BlockPlacement extends AbstractPacket {
             buf.writeFloat(hitVecY);
             buf.writeFloat(hitVecZ);
             buf.writeBoolean(insideBlock);
+            if(protocolVersion >= MINECRAFT_1_21_2) {
+                buf.writeBoolean(worldBorderHit);
+            }
             if (protocolVersion >= MINECRAFT_1_19) {
                 ProtocolUtil.writeVarInt(buf, sequence);
             }

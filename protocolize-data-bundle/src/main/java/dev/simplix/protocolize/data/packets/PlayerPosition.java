@@ -43,28 +43,36 @@ public class PlayerPosition extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_1_20_1, 0x14),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_2, 0x16),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_3, MINECRAFT_1_20_4, 0x17),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 0x1A)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_21, 0x1A),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_LATEST, 0x1C)
     );
 
     private Location location;
     private boolean onGround;
+    private boolean horizontalCollision;
 
     @Override
-    public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
-        double x = buf.readDouble();
-        double y = buf.readDouble();
-        double z = buf.readDouble();
-        this.onGround = buf.readBoolean();
-
-        this.location = new Location(x, y, z, 0, 0);
+    public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
+        this.location = new Location(buf.readDouble(), buf.readDouble(), buf.readDouble(), 0, 0);
+        if(protocolVersion >= MINECRAFT_1_21_2){
+            short flags = buf.readUnsignedByte();
+            this.onGround = PlayerPositionRotation.unpackOnGround(flags);
+            this.horizontalCollision = PlayerPositionRotation.unpackHorizontalCollision(flags);
+        } else {
+            this.onGround = buf.readBoolean();
+        }
     }
 
     @Override
-    public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
+    public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         buf.writeDouble(this.location.x());
         buf.writeDouble(this.location.y());
         buf.writeDouble(this.location.z());
-        buf.writeBoolean(this.onGround);
+        if(protocolVersion >= MINECRAFT_1_21_2){
+            buf.writeByte(PlayerPositionRotation.packFlags(this.onGround, this.horizontalCollision));
+        } else {
+            buf.writeBoolean(this.onGround);
+        }
     }
 
 }

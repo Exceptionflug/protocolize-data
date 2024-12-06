@@ -30,7 +30,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class WindowItems extends AbstractPacket {
+public class ContainerSetContent extends AbstractPacket {
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x30),
@@ -51,7 +51,7 @@ public class WindowItems extends AbstractPacket {
     @Setter(AccessLevel.NONE)
     private LazyBuffer lazyBuffer = LazyBuffer.empty();
 
-    private short windowId;
+    private int windowId;
     private List<BaseItemStack> items = new ArrayList<>();
     private int count;
 
@@ -65,7 +65,7 @@ public class WindowItems extends AbstractPacket {
      */
     private int stateId;
 
-    public WindowItems(short windowId, List<BaseItemStack> items, int stateId) {
+    public ContainerSetContent(int windowId, List<BaseItemStack> items, int stateId) {
         this.windowId = windowId;
         this.items = items;
         this.count = items.size();
@@ -74,7 +74,7 @@ public class WindowItems extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        this.windowId = buf.readUnsignedByte();
+        this.windowId = (protocolVersion >= MINECRAFT_1_21_2) ? ProtocolUtil.readVarInt(buf) : buf.readUnsignedByte();
         if (protocolVersion >= MINECRAFT_1_17_1) {
             this.stateId = ProtocolUtil.readVarInt(buf);
             this.count = ProtocolUtil.readVarInt(buf);
@@ -96,7 +96,11 @@ public class WindowItems extends AbstractPacket {
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(this.windowId & 0xFF);
+        if(protocolVersion >= MINECRAFT_1_21_2) {
+            ProtocolUtil.writeVarInt(buf, this.windowId);
+        } else {
+            buf.writeByte(this.windowId & 0xFF);
+        }
         if (protocolVersion >= MINECRAFT_1_17_1) {
             ProtocolUtil.writeVarInt(buf, this.stateId);
             ProtocolUtil.writeVarInt(buf, this.count);

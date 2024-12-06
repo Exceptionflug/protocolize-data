@@ -4,6 +4,7 @@ import dev.simplix.protocolize.api.PacketDirection;
 import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.packet.AbstractPacket;
+import dev.simplix.protocolize.api.util.ProtocolUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -25,7 +26,7 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(fluent = true)
-public class WindowProperty extends AbstractPacket {
+public class ContainerSetData extends AbstractPacket {
 
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x31),
@@ -47,15 +48,19 @@ public class WindowProperty extends AbstractPacket {
     private short value;
 
     @Override
-    public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
-        this.windowId = buf.readUnsignedByte();
+    public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
+        this.windowId = (protocolVersion >= MINECRAFT_1_21_2) ? ProtocolUtil.readVarInt(buf) : buf.readUnsignedByte();
         this.property = buf.readShort();
         this.value = buf.readShort();
     }
 
     @Override
-    public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
-        buf.writeByte(this.windowId);
+    public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
+        if(protocolVersion >= MINECRAFT_1_21_2) {
+            ProtocolUtil.writeVarInt(buf, this.windowId);
+        } else {
+            buf.writeByte(this.windowId);
+        }
         buf.writeShort(this.property);
         buf.writeShort(this.value);
     }

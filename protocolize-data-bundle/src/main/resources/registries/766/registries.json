@@ -14775,9 +14775,6 @@
       "minecraft:entity.goat.screaming.eat": {
         "protocol_id": 620
       },
-      "minecraft:entity.goat.screaming.horn_break": {
-        "protocol_id": 626
-      },
       "minecraft:entity.goat.screaming.hurt": {
         "protocol_id": 621
       },
@@ -16334,9 +16331,6 @@
       },
       "minecraft:item.glow_ink_sac.use": {
         "protocol_id": 598
-      },
-      "minecraft:item.goat_horn.play": {
-        "protocol_id": 617
       },
       "minecraft:item.goat_horn.sound.0": {
         "protocol_id": 706

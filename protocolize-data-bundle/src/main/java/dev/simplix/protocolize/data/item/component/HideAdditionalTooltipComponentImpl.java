@@ -1,18 +1,10 @@
 package dev.simplix.protocolize.data.item.component;
 
-import dev.simplix.protocolize.api.item.component.HideAdvancedTooltipComponent;
+import dev.simplix.protocolize.api.item.component.HideAdditionalTooltipComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import io.netty.buffer.ByteBuf;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
-
-public class HideAdditionalTooltipComponentImpl implements HideAdvancedTooltipComponent {
+public class HideAdditionalTooltipComponentImpl implements HideAdditionalTooltipComponent {
 
     @Override
     public void read(ByteBuf byteBuf, int i) throws Exception {
@@ -27,16 +19,12 @@ public class HideAdditionalTooltipComponentImpl implements HideAdvancedTooltipCo
         return Type.INSTANCE;
     }
 
-    public static class Type implements StructuredComponentType<HideAdvancedTooltipComponent>, Factory {
+    public static class Type implements StructuredComponentType<HideAdditionalTooltipComponent>, Factory {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 14)
-        );
-
         @Override
-        public HideAdvancedTooltipComponent create() {
+        public HideAdditionalTooltipComponent create() {
             return new HideAdditionalTooltipComponentImpl();
         }
 
@@ -46,12 +34,7 @@ public class HideAdditionalTooltipComponentImpl implements HideAdvancedTooltipCo
         }
 
         @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
-        }
-
-        @Override
-        public HideAdvancedTooltipComponent createEmpty() {
+        public HideAdditionalTooltipComponent createEmpty() {
             return create();
         }
 
