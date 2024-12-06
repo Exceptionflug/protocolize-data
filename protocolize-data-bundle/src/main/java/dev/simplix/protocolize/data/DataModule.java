@@ -56,10 +56,10 @@ public class DataModule implements ProtocolizeModule {
                 registerIdMappings(registries.mobEffectRegistry().entries(), provider, protocolVersion, MobEffect.class);
                 registerIdMappings(registries.potionRegistry().entries(), provider, protocolVersion, Potion.class);
                 registerIdMappings(registries.enchantmentRegistry().entries(), provider, protocolVersion, Enchantment.class);
+                registerIdMappings(registries.attributeRegistry().entries(), provider, protocolVersion, AttributeType.class);
                 registerIdMappings(registries.instrumentRegistry().entries(), provider, protocolVersion, Instrument.class);
                 registerIdMappings(registries.blockRegistry().entries(), provider, protocolVersion, Block.class);
                 if(protocolVersion >= ProtocolVersions.MINECRAFT_1_21_2) {
-                    registerIdMappings(registries.attributeRegistry().entries(), provider, protocolVersion, AttributeType.class);
                     registerIdMappings(registries.consumeEffectTypeRegistry().entries(), provider, protocolVersion, ConsumeEffectType.class);
                     registerIdMappings(registries.entityTypeRegistry().entries(), provider, protocolVersion, EntityType.class);
                 }
