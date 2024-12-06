@@ -21,9 +21,9 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_17;
  *
  * @author Exceptionflug
  */
-public final class ContainerClickListener extends AbstractPacketListener<ClickWindow> {
+public final class ClickWindowListener extends AbstractPacketListener<ClickWindow> {
 
-    public ContainerClickListener() {
+    public ClickWindowListener() {
         super(ClickWindow.class, Direction.UPSTREAM, 0);
     }
 

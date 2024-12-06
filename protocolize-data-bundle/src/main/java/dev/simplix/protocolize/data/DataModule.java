@@ -343,14 +343,14 @@ public class DataModule implements ProtocolizeModule {
         registrationProvider.registerItemStructuredComponentType(WrittenBookContentComponentImpl.Type.INSTANCE);
 
         PacketListenerProvider listenerProvider = Protocolize.listenerProvider();
-        listenerProvider.registerListener(new ContainerCloseListener(Direction.UPSTREAM));
-        listenerProvider.registerListener(new ContainerCloseListener(Direction.DOWNSTREAM));
-        listenerProvider.registerListener(new ContainerClickListener());
+        listenerProvider.registerListener(new CloseWindowListener(Direction.UPSTREAM));
+        listenerProvider.registerListener(new CloseWindowListener(Direction.DOWNSTREAM));
+        listenerProvider.registerListener(new ClickWindowListener());
         listenerProvider.registerListener(new PlayerPositionListener());
-        listenerProvider.registerListener(new PlayerPositionRotationListener());
-        listenerProvider.registerListener(new PlayerRotationListener());
+        listenerProvider.registerListener(new PlayerPositionLookListener());
+        listenerProvider.registerListener(new PlayerLookListener());
         listenerProvider.registerListener(new UseItemListener());
-        listenerProvider.registerListener(new UseItemOnListener());
+        listenerProvider.registerListener(new BlockPlacementListener());
     }
 
 

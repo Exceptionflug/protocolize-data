@@ -13,9 +13,9 @@ import dev.simplix.protocolize.data.packets.CloseWindow;
  *
  * @author Exceptionflug
  */
-public final class ContainerCloseListener extends AbstractPacketListener<CloseWindow> {
+public final class CloseWindowListener extends AbstractPacketListener<CloseWindow> {
 
-    public ContainerCloseListener(Direction direction) {
+    public CloseWindowListener(Direction direction) {
         super(CloseWindow.class, direction, 0);
     }
 

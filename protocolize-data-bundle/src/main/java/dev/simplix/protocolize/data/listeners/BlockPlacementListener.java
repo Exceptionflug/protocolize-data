@@ -16,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author Exceptionflug
  */
 @Slf4j
-public final class UseItemOnListener extends AbstractPacketListener<BlockPlacement> {
+public final class BlockPlacementListener extends AbstractPacketListener<BlockPlacement> {
 
-    public UseItemOnListener() {
+    public BlockPlacementListener() {
         super(BlockPlacement.class, Direction.UPSTREAM, 0);
     }
 

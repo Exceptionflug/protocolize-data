@@ -12,9 +12,9 @@ import dev.simplix.protocolize.data.packets.PlayerLook;
  *
  * @author Exceptionflug
  */
-public final class PlayerRotationListener extends AbstractPacketListener<PlayerLook> {
+public final class PlayerLookListener extends AbstractPacketListener<PlayerLook> {
 
-    public PlayerRotationListener() {
+    public PlayerLookListener() {
         super(PlayerLook.class, Direction.UPSTREAM, 0);
     }
 
