@@ -3,21 +3,11 @@ package dev.simplix.protocolize.data.item.component;
 import dev.simplix.protocolize.api.BlockPosition;
 import dev.simplix.protocolize.api.item.component.LodestoneTrackerComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.util.BlockPositionSerializer;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
@@ -56,11 +46,6 @@ public class LodestoneTrackerComponentImpl implements LodestoneTrackerComponent 
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 44),
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 43)
-        );
-
         @Override
         public LodestoneTrackerComponent create(boolean tracked) {
             return new LodestoneTrackerComponentImpl(null, null, tracked);
@@ -73,11 +58,6 @@ public class LodestoneTrackerComponentImpl implements LodestoneTrackerComponent 
         @Override
         public String getName() {
             return "minecraft:lodestone_tracker";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

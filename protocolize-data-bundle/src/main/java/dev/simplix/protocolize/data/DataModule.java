@@ -58,6 +58,12 @@ public class DataModule implements ProtocolizeModule {
                 registerIdMappings(registries.enchantmentRegistry().entries(), provider, protocolVersion, Enchantment.class);
                 registerIdMappings(registries.attributeRegistry().entries(), provider, protocolVersion, AttributeType.class);
                 registerIdMappings(registries.instrumentRegistry().entries(), provider, protocolVersion, Instrument.class);
+                registerIdMappings(registries.blockRegistry().entries(), provider, protocolVersion, Block.class);
+                if(protocolVersion >= ProtocolVersions.MINECRAFT_1_21_2) {
+                    registerIdMappings(registries.consumeEffectTypeRegistry().entries(), provider, protocolVersion, ConsumeEffectType.class);
+                    registerIdMappings(registries.entityTypeRegistry().entries(), provider, protocolVersion, EntityType.class);
+                }
+                registerIdMappings(registries.dataComponentTypeRegistry().entries(), provider, protocolVersion, DataComponentType.class);
             }
             registerStringMappings(registries.soundRegistry().entries(), provider, protocolVersion, Sound.class);
         } catch (Exception e) {
@@ -165,6 +171,9 @@ public class DataModule implements ProtocolizeModule {
         Protocolize.registerService(ChargedProjectilesComponent.Factory.class, ChargedProjectilesComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(ChargedProjectilesComponentImpl.Type.INSTANCE);
 
+        Protocolize.registerService(ConsumableComponent.Factory.class, ConsumableComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(ConsumableComponentImpl.Type.INSTANCE);
+
         Protocolize.registerService(ContainerComponent.Factory.class, ContainerComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(ContainerComponentImpl.Type.INSTANCE);
 
@@ -186,11 +195,20 @@ public class DataModule implements ProtocolizeModule {
         Protocolize.registerService(DamageComponent.Factory.class, DamageComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(DamageComponentImpl.Type.INSTANCE);
 
+        Protocolize.registerService(DamageResistantComponent.Factory.class, DamageResistantComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(DamageResistantComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(DeathProtectionComponent.Factory.class, DeathProtectionComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(DeathProtectionComponentImpl.Type.INSTANCE);
+
         Protocolize.registerService(DebugStickStateComponent.Factory.class, DebugStickStateComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(DebugStickStateComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(DyedColorComponent.Factory.class, DyedColorComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(DyedColorComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(EnchantableComponent.Factory.class, EnchantableComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(EnchantableComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(EnchantmentGlintComponent.Factory.class, EnchantmentGlintComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(EnchantmentGlintComponentImpl.Type.INSTANCE);
@@ -200,6 +218,9 @@ public class DataModule implements ProtocolizeModule {
 
         Protocolize.registerService(EntityDataComponent.Factory.class, EntityDataComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(EntityDataComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(EquippableComponent.Factory.class, EquippableComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(EquippableComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(FireResistantComponent.Factory.class, FireResistantComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(FireResistantComponentImpl.Type.INSTANCE);
@@ -213,7 +234,10 @@ public class DataModule implements ProtocolizeModule {
         Protocolize.registerService(FoodComponent.Factory.class, FoodComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(FoodComponentImpl.Type.INSTANCE);
 
-        Protocolize.registerService(HideAdvancedTooltipComponent.Factory.class, HideAdditionalTooltipComponentImpl.Type.INSTANCE);
+        Protocolize.registerService(GliderComponent.Factory.class, GliderComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(GliderComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(HideAdditionalTooltipComponent.Factory.class, HideAdditionalTooltipComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(HideAdditionalTooltipComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(HideTooltipComponent.Factory.class, HideTooltipComponentImpl.Type.INSTANCE);
@@ -227,6 +251,9 @@ public class DataModule implements ProtocolizeModule {
 
         Protocolize.registerService(ItemNameComponent.Factory.class, ItemNameComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(ItemNameComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(ItemModelComponent.Factory.class, ItemModelComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(ItemModelComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(JukeboxPlayableComponent.Factory.class, JukeboxPlayableComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(JukeboxPlayableComponentImpl.Type.INSTANCE);
@@ -279,6 +306,9 @@ public class DataModule implements ProtocolizeModule {
         Protocolize.registerService(RecipesComponent.Factory.class, RecipesComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(RecipesComponentImpl.Type.INSTANCE);
 
+        Protocolize.registerService(RepairableComponent.Factory.class, RepairableComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(RepairableComponentImpl.Type.INSTANCE);
+
         Protocolize.registerService(RepairCostComponent.Factory.class, RepairCostComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(RepairCostComponentImpl.Type.INSTANCE);
 
@@ -291,11 +321,20 @@ public class DataModule implements ProtocolizeModule {
         Protocolize.registerService(ToolComponent.Factory.class, ToolComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(ToolComponentImpl.Type.INSTANCE);
 
+        Protocolize.registerService(TooltipStyleComponent.Factory.class, TooltipStyleComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(TooltipStyleComponentImpl.Type.INSTANCE);
+
         Protocolize.registerService(TrimComponent.Factory.class, TrimComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(TrimComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(UnbreakableComponent.Factory.class, UnbreakableComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(UnbreakableComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(UseCooldownComponent.Factory.class, UseCooldownComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(UseCooldownComponentImpl.Type.INSTANCE);
+
+        Protocolize.registerService(UseRemainderComponent.Factory.class, UseRemainderComponentImpl.Type.INSTANCE);
+        registrationProvider.registerItemStructuredComponentType(UseRemainderComponentImpl.Type.INSTANCE);
 
         Protocolize.registerService(WritableBookContentComponent.Factory.class, WritableBookContentComponentImpl.Type.INSTANCE);
         registrationProvider.registerItemStructuredComponentType(WritableBookContentComponentImpl.Type.INSTANCE);

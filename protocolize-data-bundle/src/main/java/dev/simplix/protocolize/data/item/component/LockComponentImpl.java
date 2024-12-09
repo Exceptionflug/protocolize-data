@@ -2,36 +2,45 @@ package dev.simplix.protocolize.data.item.component;
 
 import dev.simplix.protocolize.api.item.component.LockComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.data.util.NamedBinaryTagUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.Tag;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
+import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 
 @Data
 @AllArgsConstructor
 public class LockComponentImpl implements LockComponent {
 
-    private StringTag key;
+    /* This contains ItemPredicates and more structured components but not as stream codecs... Can be looked at, at a later date */
+    private Tag<?> lock;
 
     @Override
     public void read(ByteBuf byteBuf, int protocolVersion) throws Exception {
-        key = (StringTag) NamedBinaryTagUtil.readTag(byteBuf, protocolVersion);
+        if(protocolVersion <= MINECRAFT_1_21_1) {
+            lock = NamedBinaryTagUtil.readTag(byteBuf, protocolVersion); // StringTag
+        } else {
+            CompoundTag compoundTag = (CompoundTag) NamedBinaryTagUtil.readTag(byteBuf, protocolVersion); // CompoundTag
+            if(compoundTag != null && compoundTag.containsKey("lock")){
+                lock = compoundTag.get("lock");
+            }
+        }
     }
 
     @Override
     public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
-        NamedBinaryTagUtil.writeTag(byteBuf, key, protocolVersion);
+        if(protocolVersion <= MINECRAFT_1_21_1) {
+            NamedBinaryTagUtil.writeTag(byteBuf, lock, protocolVersion); // StringTag
+        } else {
+            CompoundTag compoundTag = new CompoundTag();
+            if(lock != null){
+                compoundTag.put("lock", lock);
+            }
+            NamedBinaryTagUtil.writeTag(byteBuf, compoundTag, protocolVersion); // CompoundTag
+        }
     }
 
     @Override
@@ -43,25 +52,14 @@ public class LockComponentImpl implements LockComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 55),
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 54)
-        );
-
         @Override
-        public LockComponent create(StringTag key) {
-            return new LockComponentImpl(key);
+        public LockComponent create(Tag<?> lock) {
+            return new LockComponentImpl(lock);
         }
-
 
         @Override
         public String getName() {
             return "minecraft:lock";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

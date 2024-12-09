@@ -29,4 +29,16 @@ public class Registries {
     @SerializedName("minecraft:instrument")
     private GenericRegistry instrumentRegistry;
 
+    @SerializedName("minecraft:data_component_type")
+    private GenericRegistry dataComponentTypeRegistry;
+
+    @SerializedName("minecraft:entity_type")
+    private GenericRegistry entityTypeRegistry;
+
+    @SerializedName("minecraft:consume_effect_type")
+    private GenericRegistry consumeEffectTypeRegistry;
+
+    @SerializedName("minecraft:block")
+    private GenericRegistry blockRegistry;
+
 }

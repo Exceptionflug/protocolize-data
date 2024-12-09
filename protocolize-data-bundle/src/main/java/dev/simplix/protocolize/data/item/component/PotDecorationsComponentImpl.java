@@ -1,42 +1,52 @@
 package dev.simplix.protocolize.data.item.component;
 
+import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.item.component.PotDecorationsComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
+import dev.simplix.protocolize.api.mapping.ProtocolMapping;
+import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
+import dev.simplix.protocolize.data.ItemType;
+import dev.simplix.protocolize.data.util.StructuredComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_6;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
+@Slf4j(topic = "Protocolize")
 public class PotDecorationsComponentImpl implements PotDecorationsComponent {
 
-    private List<Integer> decorations;
+    /* This should be limited to a size of 4 elements */
+    private List<ItemType> decorations;
+
+    private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
 
     @Override
     public void read(ByteBuf byteBuf, int protocolVersion) throws Exception {
         int count = ProtocolUtil.readVarInt(byteBuf);
         for(int i = 0; i < count; i++) {
-            decorations.add(ProtocolUtil.readVarInt(byteBuf));
+            ItemType itemType = MAPPING_PROVIDER.mapIdToEnum(ProtocolUtil.readVarInt(byteBuf), protocolVersion, ItemType.class);
+            decorations.add(itemType);
         }
     }
 
     @Override
     public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
         ProtocolUtil.writeVarInt(byteBuf, decorations.size());
-        for(int decoration : decorations) {
-            ProtocolUtil.writeVarInt(byteBuf, decoration);
+        for(ItemType decoration : decorations) {
+            ProtocolMapping mapping = MAPPING_PROVIDER.mapping(decoration, protocolVersion);
+            if (!(mapping instanceof ProtocolIdMapping)) {
+                StructuredComponentUtil.logMappingWarning(decoration.name(), protocolVersion);
+                ProtocolUtil.writeVarInt(byteBuf, 0);
+            } else {
+                ProtocolUtil.writeVarInt(byteBuf, ((ProtocolIdMapping) mapping).id());
+            }
         }
     }
 
@@ -49,25 +59,14 @@ public class PotDecorationsComponentImpl implements PotDecorationsComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21, MINECRAFT_LATEST, 51),
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_20_6, 50)
-        );
-
         @Override
-        public PotDecorationsComponent create(List<Integer> decorations) {
+        public PotDecorationsComponent create(List<ItemType> decorations) {
             return new PotDecorationsComponentImpl(decorations);
         }
-
 
         @Override
         public String getName() {
             return "minecraft:pot_decorations";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

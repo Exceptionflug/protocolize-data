@@ -36,6 +36,8 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Accessors(fluent = true)
 public class OpenWindow extends AbstractPacket {
 
+    /* ClientboundOpenScreenPacket */
+
     private static final List<String> unknownLegacyTypes = new ArrayList<>();
     private static final List<Integer> unknownTypes = new ArrayList<>();
 
@@ -53,7 +55,8 @@ public class OpenWindow extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_3, MINECRAFT_1_19_3, 0x2C),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_1_20_1, 0x30),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_4, 0x31),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 0x33)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_21, 0x33),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_LATEST, 0x35)
     );
 
     public OpenWindow(int windowId, InventoryType inventoryType, ChatElement<?> title) {
@@ -88,13 +91,13 @@ public class OpenWindow extends AbstractPacket {
             buf.readBytes(buf.readableBytes()); // Skip optional entity id
         } else {
             this.windowId = ProtocolUtil.readVarInt(buf);
-            int id = ProtocolUtil.readVarInt(buf);
-            this.inventoryType = InventoryType.type(id, protocolVersion);
+            int typeId = ProtocolUtil.readVarInt(buf);
+            this.inventoryType = InventoryType.type(typeId, protocolVersion);
             if (this.inventoryType == null) {
-                typeFallback = id;
-                if(!unknownTypes.contains(id)) {
-                    unknownTypes.add(id);
-                    log.warn("Unknown inventory type {} in protocol version {}", id, protocolVersion);
+                typeFallback = typeId;
+                if(!unknownTypes.contains(typeId)) {
+                    unknownTypes.add(typeId);
+                    log.warn("Unknown inventory type {} in protocol version {}", typeId, protocolVersion);
                 }
             }
             if (protocolVersion >= MINECRAFT_1_20_3) {

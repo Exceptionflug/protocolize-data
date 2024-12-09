@@ -4,12 +4,12 @@ import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.item.Attribute;
 import dev.simplix.protocolize.api.item.component.AttributeModifiersComponent;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.AttributeType;
+import dev.simplix.protocolize.data.util.StructuredComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,12 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
+import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 
 @Data
 @AllArgsConstructor
@@ -43,10 +40,12 @@ public class AttributeModifiersComponentImpl implements AttributeModifiersCompon
             if(protocolVersion < MINECRAFT_1_21){
                 attribute.setUuid(ProtocolUtil.readUniqueId(byteBuf));
             }
-            attribute.setName(ProtocolUtil.readString(byteBuf));
-            attribute.setValue(byteBuf.readDouble());
-            attribute.setOperation(Attribute.Operation.values()[ProtocolUtil.readVarInt(byteBuf)]);
-            attribute.setSlot(Attribute.EquipmentSlot.values()[ProtocolUtil.readVarInt(byteBuf)]);
+            Attribute.AttributeModifier attributeModifier = new Attribute.AttributeModifier();
+            attributeModifier.setId(ProtocolUtil.readString(byteBuf));
+            attributeModifier.setAmount(byteBuf.readDouble());
+            attributeModifier.setOperation(Attribute.AttributeModifier.Operation.values()[ProtocolUtil.readVarInt(byteBuf)]);
+            attribute.setModifier(attributeModifier);
+            attribute.setSlot(Attribute.EquipmentSlotGroup.values()[ProtocolUtil.readVarInt(byteBuf)]);
             attributes.add(attribute);
         }
         showInTooltip = byteBuf.readBoolean();
@@ -58,7 +57,7 @@ public class AttributeModifiersComponentImpl implements AttributeModifiersCompon
         for(Attribute attribute : attributes){
             ProtocolMapping mapping = MAPPING_PROVIDER.mapping(attribute.getType(), protocolVersion);
             if (!(mapping instanceof ProtocolIdMapping)) {
-                log.warn("{} cannot be used on protocol version {}", attribute.getType().name(), protocolVersion);
+                StructuredComponentUtil.logMappingWarning(attribute.getType().name(), protocolVersion);
                 ProtocolUtil.writeVarInt(byteBuf, 0);
             } else {
                 ProtocolUtil.writeVarInt(byteBuf, ((ProtocolIdMapping) mapping).id());
@@ -66,9 +65,9 @@ public class AttributeModifiersComponentImpl implements AttributeModifiersCompon
             if(protocolVersion < MINECRAFT_1_21){
                 ProtocolUtil.writeUniqueId(byteBuf, attribute.getUuid());
             }
-            ProtocolUtil.writeString(byteBuf, attribute.getName());
-            byteBuf.writeDouble(attribute.getValue());
-            ProtocolUtil.writeVarInt(byteBuf, attribute.getOperation().ordinal());
+            ProtocolUtil.writeString(byteBuf, attribute.getModifier().getId());
+            byteBuf.writeDouble(attribute.getModifier().getAmount());
+            ProtocolUtil.writeVarInt(byteBuf, attribute.getModifier().getOperation().ordinal());
             ProtocolUtil.writeVarInt(byteBuf, attribute.getSlot().ordinal());
         }
         byteBuf.writeBoolean(showInTooltip);
@@ -98,18 +97,9 @@ public class AttributeModifiersComponentImpl implements AttributeModifiersCompon
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 12)
-        );
-
         @Override
         public String getName() {
             return "minecraft:attribute_modifiers";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

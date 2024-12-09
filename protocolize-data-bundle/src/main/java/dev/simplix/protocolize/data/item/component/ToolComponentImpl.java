@@ -1,27 +1,23 @@
 package dev.simplix.protocolize.data.item.component;
 
+import dev.simplix.protocolize.api.item.ToolRule;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.item.component.ToolComponent;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
-import dev.simplix.protocolize.data.util.StructureComponentUtil;
+import dev.simplix.protocolize.data.Block;
+import dev.simplix.protocolize.data.util.StructuredComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
 
 @Data
 @AllArgsConstructor
 public class ToolComponentImpl implements ToolComponent {
 
-    private List<Rule> rules;
+    private List<ToolRule> rules;
     private float miningSpeed;
     private int damagePerBlock;
 
@@ -38,16 +34,16 @@ public class ToolComponentImpl implements ToolComponent {
     @Override
     public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
         ProtocolUtil.writeVarInt(byteBuf, rules.size());
-        for(Rule rule : rules) {
+        for(ToolRule rule : rules) {
             writeRule(byteBuf, rule, protocolVersion);
         }
         byteBuf.writeFloat(miningSpeed);
         ProtocolUtil.writeVarInt(byteBuf, damagePerBlock);
     }
 
-    private Rule readRule(ByteBuf byteBuf, int protocolVersion){
-        Rule rule = new Rule();
-        rule.setBlockSet(StructureComponentUtil.readBlockSet(byteBuf, protocolVersion));
+    private ToolRule readRule(ByteBuf byteBuf, int protocolVersion){
+        ToolRule rule = new ToolRule();
+        rule.setBlockSet(StructuredComponentUtil.readHolderSet(byteBuf, Block.class, protocolVersion));
         if(byteBuf.readBoolean()){
             rule.setSpeed(byteBuf.readFloat());
         }
@@ -57,8 +53,8 @@ public class ToolComponentImpl implements ToolComponent {
         return rule;
     }
 
-    private void writeRule(ByteBuf byteBuf, Rule rule, int protocolVersion){
-        StructureComponentUtil.writeBlockSet(byteBuf, rule.getBlockSet(), protocolVersion);
+    private void writeRule(ByteBuf byteBuf, ToolRule rule, int protocolVersion){
+        StructuredComponentUtil.writeHolderSet(byteBuf, rule.getBlockSet(), Block.class, protocolVersion);
         boolean hasSpeed = rule.getSpeed() != null;
         byteBuf.writeBoolean(hasSpeed);
         if(hasSpeed){
@@ -77,12 +73,12 @@ public class ToolComponentImpl implements ToolComponent {
     }
 
     @Override
-    public void addRule(Rule rule) {
+    public void addRule(ToolRule rule) {
         rules.add(rule);
     }
 
     @Override
-    public void removeRule(Rule rule) {
+    public void removeRule(ToolRule rule) {
         rules.remove(rule);
     }
 
@@ -95,23 +91,14 @@ public class ToolComponentImpl implements ToolComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 22)
-        );
-
         @Override
-        public ToolComponent create(List<Rule> rules, float miningSpeed, int damagePerBlock) {
+        public ToolComponent create(List<ToolRule> rules, float miningSpeed, int damagePerBlock) {
             return new ToolComponentImpl(rules, miningSpeed, damagePerBlock);
         }
 
         @Override
         public String getName() {
             return "minecraft:tool";
-        }
-
-        @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
         }
 
         @Override

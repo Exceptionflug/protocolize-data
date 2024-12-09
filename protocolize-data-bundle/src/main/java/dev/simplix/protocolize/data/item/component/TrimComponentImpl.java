@@ -1,57 +1,64 @@
 package dev.simplix.protocolize.data.item.component;
 
+import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.chat.ChatElement;
-import dev.simplix.protocolize.api.item.Trim;
+import dev.simplix.protocolize.api.item.TrimMaterial;
+import dev.simplix.protocolize.api.item.TrimPattern;
 import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.item.component.TrimComponent;
-import dev.simplix.protocolize.api.mapping.AbstractProtocolMapping;
-import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
+import dev.simplix.protocolize.api.providers.MappingProvider;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
+import dev.simplix.protocolize.data.ItemType;
 import dev.simplix.protocolize.data.util.NamedBinaryTagUtil;
+import dev.simplix.protocolize.data.util.StructuredComponentUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_20_5;
-import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_LATEST;
+import static dev.simplix.protocolize.api.util.ProtocolVersions.MINECRAFT_1_21_2;
 
 @Data
 @AllArgsConstructor
+@Slf4j(topic = "Protocolize")
 public class TrimComponentImpl implements TrimComponent {
 
-    private Trim trim;
-    boolean showInTooltip;
+    private ItemType materialItem;
+    private TrimMaterial trimMaterial;
+    private ItemType patternItem;
+    private TrimPattern trimPattern;
+    private boolean showInTooltip;
+
+    private static MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
 
     @Override
     public void read(ByteBuf byteBuf, int protocolVersion) throws Exception {
         int trimType = ProtocolUtil.readVarInt(byteBuf);
         if(trimType != 0){
-            trim.setMaterialType(trimType - 1);
+            materialItem = MAPPING_PROVIDER.mapIdToEnum(trimType - 1, protocolVersion, ItemType.class);
         } else {
-            Trim.TrimMaterial material = new Trim.TrimMaterial();
+            TrimMaterial material = new TrimMaterial();
             material.setAssetName(ProtocolUtil.readString(byteBuf));
-            material.setIngredient(ProtocolUtil.readVarInt(byteBuf));
+            material.setIngredient(MAPPING_PROVIDER.mapIdToEnum(ProtocolUtil.readVarInt(byteBuf), protocolVersion, ItemType.class));
             material.setItemModelIndex(byteBuf.readFloat());
             int count = ProtocolUtil.readVarInt(byteBuf);
-            Map<Integer, String> overrides = new HashMap<>(count);
+            Map<Object, String> overrides = new HashMap<>(count);
             for(int i = 0; i < count; i++){
-                overrides.put(ProtocolUtil.readVarInt(byteBuf), ProtocolUtil.readString(byteBuf));
+                overrides.put((protocolVersion >= MINECRAFT_1_21_2) ? ProtocolUtil.readString(byteBuf) : ProtocolUtil.readVarInt(byteBuf), ProtocolUtil.readString(byteBuf));
             }
             material.setOverrides(overrides);
             material.setDescription(ChatElement.ofNbt(NamedBinaryTagUtil.readTag(byteBuf, protocolVersion)));
         }
         int patternType = ProtocolUtil.readVarInt(byteBuf);
         if(patternType != 0){
-            trim.setPatternType(patternType - 1);
+            patternItem = MAPPING_PROVIDER.mapIdToEnum(patternType - 1, protocolVersion, ItemType.class);
         } else {
-            Trim.TrimPattern pattern = new Trim.TrimPattern();
+            TrimPattern pattern = new TrimPattern();
             pattern.setAssetName(ProtocolUtil.readString(byteBuf));
-            pattern.setTemplateItem(ProtocolUtil.readVarInt(byteBuf));
+            pattern.setTemplateItem(MAPPING_PROVIDER.mapIdToEnum(ProtocolUtil.readVarInt(byteBuf), protocolVersion, ItemType.class));
             pattern.setDescription(ChatElement.ofNbt(NamedBinaryTagUtil.readTag(byteBuf, protocolVersion)));
             pattern.setDecal(byteBuf.readBoolean());
         }
@@ -60,28 +67,32 @@ public class TrimComponentImpl implements TrimComponent {
 
     @Override
     public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
-        if(trim.getMaterialType() != null) {
-            ProtocolUtil.writeVarInt(byteBuf, trim.getMaterialType() + 1);
+        if(materialItem != null) {
+            if(!StructuredComponentUtil.writeItemMapping(byteBuf, materialItem, protocolVersion, 1))
+                return;
         } else {
-            Trim.TrimMaterial material = trim.getTrimMaterial();
-            ProtocolUtil.writeString(byteBuf, material.getAssetName());
-            ProtocolUtil.writeVarInt(byteBuf, material.getIngredient());
-            byteBuf.writeFloat(material.getItemModelIndex());
-            ProtocolUtil.writeVarInt(byteBuf, material.getOverrides().size());
-            for(Map.Entry<Integer, String> entry : material.getOverrides().entrySet()){
-                ProtocolUtil.writeVarInt(byteBuf, entry.getKey());
+            ProtocolUtil.writeString(byteBuf, trimMaterial.getAssetName());
+            StructuredComponentUtil.writeItemMapping(byteBuf, trimMaterial.getIngredient(), protocolVersion);
+            byteBuf.writeFloat(trimMaterial.getItemModelIndex());
+            ProtocolUtil.writeVarInt(byteBuf, trimMaterial.getOverrides().size());
+            for(Map.Entry<Object, String> entry : trimMaterial.getOverrides().entrySet()){
+                if(protocolVersion >= MINECRAFT_1_21_2){
+                    ProtocolUtil.writeString(byteBuf, (String) entry.getKey());
+                } else {
+                    ProtocolUtil.writeVarInt(byteBuf, (int) entry.getKey());
+                }
                 ProtocolUtil.writeString(byteBuf, entry.getValue());
             }
-            NamedBinaryTagUtil.writeTag(byteBuf, material.getDescription().asNbt(), protocolVersion);
+            NamedBinaryTagUtil.writeTag(byteBuf, trimMaterial.getDescription().asNbt(), protocolVersion);
         }
-        if(trim.getPatternType() != null) {
-            ProtocolUtil.writeVarInt(byteBuf, trim.getPatternType() + 1);
+        if(patternItem != null) {
+            if(!StructuredComponentUtil.writeItemMapping(byteBuf, patternItem, protocolVersion, 1))
+                return;
         } else {
-            Trim.TrimPattern pattern = trim.getTrimPattern();
-            ProtocolUtil.writeString(byteBuf, pattern.getAssetName());
-            ProtocolUtil.writeVarInt(byteBuf, pattern.getTemplateItem());
-            NamedBinaryTagUtil.writeTag(byteBuf, pattern.getDescription().asNbt(), protocolVersion);
-            byteBuf.writeBoolean(pattern.isDecal());
+            ProtocolUtil.writeString(byteBuf, trimPattern.getAssetName());
+            StructuredComponentUtil.writeItemMapping(byteBuf, trimPattern.getTemplateItem(), protocolVersion);
+            NamedBinaryTagUtil.writeTag(byteBuf, trimPattern.getDescription().asNbt(), protocolVersion);
+            byteBuf.writeBoolean(trimPattern.isDecal());
         }
         byteBuf.writeBoolean(showInTooltip);
     }
@@ -95,13 +106,9 @@ public class TrimComponentImpl implements TrimComponent {
 
         public static Type INSTANCE = new Type();
 
-        private static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
-            AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 35)
-        );
-
         @Override
-        public TrimComponent create(Trim trim, boolean showInTooltip) {
-            return new TrimComponentImpl(trim, showInTooltip);
+        public TrimComponent create(ItemType materialItem, TrimMaterial trimMaterial, ItemType patternItem, TrimPattern trimPattern, boolean showInTooltip) {
+            return new TrimComponentImpl(materialItem, trimMaterial, patternItem, trimPattern, showInTooltip);
         }
 
         @Override
@@ -110,13 +117,8 @@ public class TrimComponentImpl implements TrimComponent {
         }
 
         @Override
-        public List<ProtocolIdMapping> getMappings() {
-            return MAPPINGS;
-        }
-
-        @Override
         public TrimComponent createEmpty() {
-            return new TrimComponentImpl(new Trim(null, null, null, null), true);
+            return new TrimComponentImpl(ItemType.AIR, null, ItemType.AIR, null, true);
         }
 
     }

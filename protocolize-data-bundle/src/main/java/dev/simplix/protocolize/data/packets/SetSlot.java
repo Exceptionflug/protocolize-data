@@ -31,6 +31,8 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Accessors(fluent = true)
 public class SetSlot extends AbstractPacket {
 
+    /* ClientboundContainerSetSlotPacket */
+
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x2F),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_9, MINECRAFT_1_12_2, 0x16),
@@ -50,7 +52,7 @@ public class SetSlot extends AbstractPacket {
     @Setter(AccessLevel.NONE)
     private LazyBuffer lazyBuffer = LazyBuffer.empty();
 
-    private byte windowId;
+    private int windowId;
     private short slot;
     private BaseItemStack itemStack = ItemStack.NO_DATA;
 
@@ -69,7 +71,7 @@ public class SetSlot extends AbstractPacket {
 
     @Override
     public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        this.windowId = buf.readByte();
+        this.windowId = (protocolVersion >= MINECRAFT_1_21_2) ? ProtocolUtil.readVarInt(buf) : buf.readByte();
         if (protocolVersion >= MINECRAFT_1_17_1) {
             this.stateId = ProtocolUtil.readVarInt(buf);
         }
@@ -84,7 +86,11 @@ public class SetSlot extends AbstractPacket {
 
     @Override
     public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
-        buf.writeByte(this.windowId);
+        if(protocolVersion >= MINECRAFT_1_21_2) {
+            ProtocolUtil.writeVarInt(buf, this.windowId);
+        } else {
+            buf.writeByte(this.windowId & 0xFF);
+        }
         if (protocolVersion >= MINECRAFT_1_17_1) {
             ProtocolUtil.writeVarInt(buf, this.stateId);
         }

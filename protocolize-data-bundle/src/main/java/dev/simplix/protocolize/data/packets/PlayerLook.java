@@ -27,6 +27,8 @@ import static dev.simplix.protocolize.api.util.ProtocolVersions.*;
 @Accessors(fluent = true)
 public class PlayerLook extends AbstractPacket {
 
+    /* ServerboundMovePlayerPacket.Rot */
+
     public static final List<ProtocolIdMapping> MAPPINGS = Arrays.asList(
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_8, MINECRAFT_1_8, 0x05),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_9, MINECRAFT_1_11_2, 0x0E),
@@ -42,25 +44,37 @@ public class PlayerLook extends AbstractPacket {
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_19_4, MINECRAFT_1_20_1, 0x16),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_2, MINECRAFT_1_20_2, 0x18),
         AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_3, MINECRAFT_1_20_4, 0x19),
-        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_LATEST, 0x1C)
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_20_5, MINECRAFT_1_21, 0x1C),
+        AbstractProtocolMapping.rangedIdMapping(MINECRAFT_1_21_2, MINECRAFT_LATEST, 0x1E)
     );
 
     private float yaw;
     private float pitch;
     private boolean onGround;
+    private boolean horizontalCollision;
 
     @Override
-    public void read(ByteBuf buf, PacketDirection packetDirection, int i) {
+    public void read(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         this.yaw = buf.readFloat();
         this.pitch = buf.readFloat();
-        this.onGround = buf.readBoolean();
+        if(protocolVersion >= MINECRAFT_1_21_2){
+            short flags = buf.readUnsignedByte();
+            this.onGround = PlayerPositionLook.unpackOnGround(flags);
+            this.horizontalCollision = PlayerPositionLook.unpackHorizontalCollision(flags);
+        } else {
+            this.onGround = buf.readBoolean();
+        }
     }
 
     @Override
-    public void write(ByteBuf buf, PacketDirection packetDirection, int i) {
+    public void write(ByteBuf buf, PacketDirection packetDirection, int protocolVersion) {
         buf.writeFloat(this.yaw);
         buf.writeFloat(this.pitch);
-        buf.writeBoolean(this.onGround);
+        if(protocolVersion >= MINECRAFT_1_21_2){
+            buf.writeByte(PlayerPositionLook.packFlags(this.onGround, this.horizontalCollision));
+        } else {
+            buf.writeBoolean(this.onGround);
+        }
     }
 
 }
