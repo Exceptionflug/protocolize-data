@@ -6,6 +6,7 @@ import dev.simplix.protocolize.api.item.component.StructuredComponentType;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.MappingProvider;
+import dev.simplix.protocolize.api.util.Either;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.Enchantment;
 import dev.simplix.protocolize.data.util.StructuredComponentUtil;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Slf4j(topic = "Protocolize")
 public class StoredEnchantmentsComponentImpl implements StoredEnchantmentsComponent {
 
-    private Map<Enchantment, Integer> enchantments;
+    private Map<Either<Enchantment, Integer>, Integer> enchantments;
     private boolean showInTooltip;
 
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
@@ -32,9 +33,10 @@ public class StoredEnchantmentsComponentImpl implements StoredEnchantmentsCompon
         int count = ProtocolUtil.readVarInt(byteBuf);
         enchantments = new HashMap<>(count);
         for (int i = 0; i < count; i++) {
-            Enchantment enchantment = MAPPING_PROVIDER.mapIdToEnum(ProtocolUtil.readVarInt(byteBuf), protocolVersion, Enchantment.class);
+            int enchantmentId = ProtocolUtil.readVarInt(byteBuf);
+            Enchantment enchantment = MAPPING_PROVIDER.mapIdToEnum(enchantmentId, protocolVersion, Enchantment.class);
             int level = ProtocolUtil.readVarInt(byteBuf);
-            enchantments.put(enchantment, level);
+            enchantments.put(enchantment != null ? Either.left(enchantment) : Either.right(enchantmentId), level);
         }
         showInTooltip = byteBuf.readBoolean();
     }
@@ -42,13 +44,17 @@ public class StoredEnchantmentsComponentImpl implements StoredEnchantmentsCompon
     @Override
     public void write(ByteBuf byteBuf, int protocolVersion) throws Exception {
         ProtocolUtil.writeVarInt(byteBuf, enchantments.size());
-        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            ProtocolMapping mapping = MAPPING_PROVIDER.mapping(entry.getKey(), protocolVersion);
-            if (!(mapping instanceof ProtocolIdMapping)) {
-                StructuredComponentUtil.logMappingWarning(entry.getKey().name(), protocolVersion);
-                ProtocolUtil.writeVarInt(byteBuf, 0);
+        for (Map.Entry<Either<Enchantment, Integer>, Integer> entry : enchantments.entrySet()) {
+            if(entry.getKey().isLeft()) {
+                ProtocolMapping mapping = MAPPING_PROVIDER.mapping(entry.getKey().getLeft(), protocolVersion);
+                if (!(mapping instanceof ProtocolIdMapping)) {
+                    StructuredComponentUtil.logMappingWarning(entry.getKey().getLeft().name(), protocolVersion);
+                    ProtocolUtil.writeVarInt(byteBuf, 0);
+                } else {
+                    ProtocolUtil.writeVarInt(byteBuf, ((ProtocolIdMapping) mapping).id());
+                }
             } else {
-                ProtocolUtil.writeVarInt(byteBuf, ((ProtocolIdMapping) mapping).id());
+                ProtocolUtil.writeVarInt(byteBuf, entry.getKey().getRight());
             }
             ProtocolUtil.writeVarInt(byteBuf, entry.getValue());
         }
@@ -62,12 +68,31 @@ public class StoredEnchantmentsComponentImpl implements StoredEnchantmentsCompon
 
     @Override
     public void removeEnchantment(Enchantment enchantment) {
-        enchantments.remove(enchantment);
+        for(Map.Entry<Either<Enchantment, Integer>, Integer> entry : enchantments.entrySet()) {
+            if(entry.getKey().isLeft() && enchantment.equals(entry.getKey().getLeft())) {
+                enchantments.remove(entry.getKey());
+            }
+        }
+    }
+
+    @Override
+    public void removeEnchantment(int enchantmentId) {
+        for(Map.Entry<Either<Enchantment, Integer>, Integer> entry : enchantments.entrySet()) {
+            if(entry.getKey().isRight() && entry.getKey().getRight() == enchantmentId) {
+                enchantments.remove(entry.getKey());
+            }
+        }
     }
 
     @Override
     public void addEnchantment(Enchantment enchantment, int level) {
-        enchantments.put(enchantment, level);
+        enchantments.put(Either.left(enchantment), level);
+    }
+
+
+    @Override
+    public void addEnchantment(int enchantmentId, int level) {
+        enchantments.put(Either.right(enchantmentId), level);
     }
 
     @Override
@@ -80,12 +105,12 @@ public class StoredEnchantmentsComponentImpl implements StoredEnchantmentsCompon
         public static Type INSTANCE = new Type();
 
         @Override
-        public StoredEnchantmentsComponent create(Map<Enchantment, Integer> enchantments) {
+        public StoredEnchantmentsComponent create(Map<Either<Enchantment, Integer>, Integer> enchantments) {
             return new StoredEnchantmentsComponentImpl(enchantments, true);
         }
 
         @Override
-        public StoredEnchantmentsComponent create(Map<Enchantment, Integer> enchantments, boolean showInTooltip) {
+        public StoredEnchantmentsComponent create(Map<Either<Enchantment, Integer>, Integer> enchantments, boolean showInTooltip) {
             return new StoredEnchantmentsComponentImpl(enchantments, showInTooltip);
         }
 

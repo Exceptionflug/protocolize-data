@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 public class LazyBuffer {
 
     private final byte[] data;
-    private final Consumer<ByteBuf> bufConsumer;
+    private final LazyThrowingConsumer<ByteBuf> bufConsumer;
     private boolean read;
 
-    public LazyBuffer(byte[] data, Consumer<ByteBuf> consumer) {
+    public LazyBuffer(byte[] data, LazyThrowingConsumer<ByteBuf> consumer) {
         this.data = data;
         this.bufConsumer = consumer;
     }
@@ -42,6 +42,22 @@ public class LazyBuffer {
         } else {
             buf.writeBytes(data);
         }
+    }
+
+    @FunctionalInterface
+    public interface LazyThrowingConsumer<T> extends Consumer<T> {
+
+        @Override
+        default void accept(final T elem) {
+            try {
+                acceptThrows(elem);
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        void acceptThrows(T elem) throws Exception;
+
     }
 
 }

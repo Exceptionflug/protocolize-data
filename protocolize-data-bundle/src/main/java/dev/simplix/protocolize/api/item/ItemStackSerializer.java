@@ -41,7 +41,7 @@ public final class ItemStackSerializer {
 
     // READ
 
-    public static ItemStack read(ByteBuf buf, int protocolVersion) {
+    public static ItemStack read(ByteBuf buf, int protocolVersion) throws Exception {
         Preconditions.checkNotNull(buf, "Buf cannot be null");
         try {
             if (protocolVersion >= MINECRAFT_1_20_5) {
@@ -90,8 +90,7 @@ public final class ItemStackSerializer {
             return out;
         } catch (Exception e) {
             DebugUtil.writeDump(buf, e);
-            log.error("Unable to read item stack from buffer in protocol version {}", protocolVersion, e);
-            return ItemStack.NO_DATA;
+            throw e;
         }
     }
 
