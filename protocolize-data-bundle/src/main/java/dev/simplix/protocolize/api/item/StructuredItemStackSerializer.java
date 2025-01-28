@@ -4,9 +4,12 @@ import com.google.common.collect.Multimap;
 import dev.simplix.protocolize.api.Protocolize;
 import dev.simplix.protocolize.api.chat.ChatElement;
 import dev.simplix.protocolize.api.item.component.*;
+import dev.simplix.protocolize.api.item.component.exception.InvalidDataComponentTypeException;
+import dev.simplix.protocolize.api.item.component.exception.InvalidDataComponentVersionException;
 import dev.simplix.protocolize.api.mapping.ProtocolIdMapping;
 import dev.simplix.protocolize.api.mapping.ProtocolMapping;
 import dev.simplix.protocolize.api.providers.MappingProvider;
+import dev.simplix.protocolize.api.util.DebugUtil;
 import dev.simplix.protocolize.api.util.ProtocolUtil;
 import dev.simplix.protocolize.data.ItemType;
 import io.netty.buffer.ByteBuf;
@@ -23,31 +26,43 @@ public final class StructuredItemStackSerializer {
     private static final MappingProvider MAPPING_PROVIDER = Protocolize.mappingProvider();
 
     public ItemStack read(ByteBuf buf, int protocolVersion) {
-        int amount = ProtocolUtil.readVarInt(buf);
-        if (amount == 0) {
-            return ItemStack.NO_DATA;
+        StringBuilder sb = new StringBuilder();
+        sb.append("StructuredItemStackSerializer:");
+        try {
+            int amount = ProtocolUtil.readVarInt(buf);
+            sb.append("\n    Amount: 0x").append(Integer.toHexString(amount));
+            if (amount == 0) {
+                return ItemStack.NO_DATA;
+            }
+            int itemId = ProtocolUtil.readVarInt(buf);
+            sb.append("\n    Item ID: 0x").append(Integer.toHexString(itemId));
+            ItemType type = findItemType(itemId, protocolVersion);
+            if (type == null && !UNKNOWN_ITEMS.contains(itemId)) { //prevent console spam by checking if already logged
+                UNKNOWN_ITEMS.add(itemId);
+                log.warn("Don't know what item {} at protocol {} should be.", itemId, protocolVersion);
+            }
+            sb.append("\n    Item Type: ").append(type != null ? type.name() : "null");
+            int toAdd = ProtocolUtil.readVarInt(buf);
+            sb.append("\n    Components(+): 0x").append(Integer.toHexString(toAdd));
+            int toRemove = ProtocolUtil.readVarInt(buf);
+            sb.append("\n    Components(-): 0x").append(Integer.toHexString(toRemove));
+            List<StructuredComponent> componentsToAdd = new ArrayList<>(toAdd);
+            List<StructuredComponentType<?>> componentsToRemove = new ArrayList<>(toRemove);
+            for (int i = 0; i < toAdd; i++) {
+                componentsToAdd.add(readComponent(buf, protocolVersion, sb));
+            }
+            for (int i = 0; i < toRemove; i++) {
+                componentsToRemove.add(readComponentType(buf, protocolVersion, sb));
+            }
+            ItemStack out = new ItemStack(type, amount);
+            componentsToAdd.forEach(out::addComponent);
+            componentsToRemove.forEach(out::removeComponent);
+            populateLoreAndDisplayNameFromComponents(out);
+            return out;
+        } catch (Exception e) {
+            if(DebugUtil.enabled) log.info(sb.toString());
+            throw e;
         }
-        int itemId = ProtocolUtil.readVarInt(buf);
-        ItemType type = findItemType(itemId, protocolVersion);
-        if (type == null && !UNKNOWN_ITEMS.contains(itemId)) { //prevent console spam by checking if already logged
-            UNKNOWN_ITEMS.add(itemId);
-            log.warn("Don't know what item {} at protocol {} should be.", itemId, protocolVersion);
-        }
-        int toAdd = ProtocolUtil.readVarInt(buf);
-        int toRemove = ProtocolUtil.readVarInt(buf);
-        List<StructuredComponent> componentsToAdd = new ArrayList<>(toAdd);
-        List<StructuredComponentType<?>> componentsToRemove = new ArrayList<>(toRemove);
-        for (int i = 0; i < toAdd; i++) {
-            componentsToAdd.add(readComponent(buf, protocolVersion));
-        }
-        for (int i = 0; i < toRemove; i++) {
-            componentsToRemove.add(readComponentType(buf, protocolVersion));
-        }
-        ItemStack out = new ItemStack(type, amount);
-        componentsToAdd.forEach(out::addComponent);
-        componentsToRemove.forEach(out::removeComponent);
-        populateLoreAndDisplayNameFromComponents(out);
-        return out;
     }
 
     public void write(ByteBuf buf, BaseItemStack stack, int protocolVersion) {
@@ -100,7 +115,7 @@ public final class StructuredItemStackSerializer {
     private void writeComponentType(ByteBuf buf, StructuredComponentType<?> componentType, int protocolVersion) {
         ProtocolMapping mapping = MAPPING_PROVIDER.mapping(componentType, protocolVersion);
         if (!(mapping instanceof ProtocolIdMapping)) {
-            throw new IllegalStateException("Component " + componentType.getName() + " can not be used on protocol version " + protocolVersion);
+            throw new InvalidDataComponentVersionException(componentType, protocolVersion);
         }
         ProtocolUtil.writeVarInt(buf, ((ProtocolIdMapping) mapping).id());
     }
@@ -120,19 +135,21 @@ public final class StructuredItemStackSerializer {
         }
     }
 
-    private StructuredComponent readComponent(ByteBuf buf, int protocolVersion) {
-        StructuredComponentType<?> type = readComponentType(buf, protocolVersion);
+    private StructuredComponent readComponent(ByteBuf buf, int protocolVersion, StringBuilder sb) {
+        StructuredComponentType<?> type = readComponentType(buf, protocolVersion, sb);
+        sb.append("\n    Component Type: ").append(type.getName());
         StructuredComponent component = type.createEmpty();
         try {
             component.read(buf, protocolVersion);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to read " + component.getClass().getSimpleName() + " from item", e);
+            throw new RuntimeException("Unable to read '" + component.getType().getName() + "' data component for item at protocol version " + protocolVersion, e);
         }
         return component;
     }
 
-    private StructuredComponentType<?> readComponentType(ByteBuf buf, int protocolVersion) {
+    private StructuredComponentType<?> readComponentType(ByteBuf buf, int protocolVersion, StringBuilder sb) {
         int componentId = ProtocolUtil.readVarInt(buf);
+        sb.append("\n    Component ID: 0x").append(Integer.toHexString(componentId));
         return findComponentType(componentId, protocolVersion);
     }
 
@@ -145,8 +162,7 @@ public final class StructuredItemStackSerializer {
                 }
             }
         }
-        throw new IllegalStateException("Could not find component type " + componentId + " for protocol version " +
-            protocolVersion + ". This item is not compatible with Protocolize.");
+        throw new InvalidDataComponentTypeException(componentId, protocolVersion);
     }
 
     private ItemType findItemType(int id, int protocolVersion) {
