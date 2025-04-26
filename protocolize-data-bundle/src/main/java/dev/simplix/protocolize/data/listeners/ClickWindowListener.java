@@ -67,11 +67,16 @@ public final class ClickWindowListener extends AbstractPacketListener<ClickWindo
         if (event.player().registeredInventories().get(clickWindow.windowId()) == null) {
             return; // Inv maybe closed during click handle
         }
+        if (click.cancelled()) {
+            // Reset the clicked slot
+            event.player().sendPacket(new SetSlot((byte) clickWindow.windowId(), clickWindow.slot(), clickWindow.itemStack(), clickWindow.stateId()));
+        }
         if (inventory.type() != InventoryType.PLAYER) {
             event.player().openInventory(inventory);
         } else {
             event.player().proxyInventory().update();
         }
+
         if (clickType.name().startsWith("NUMBER_BUTTON")) {
             if (event.player().protocolVersion() < MINECRAFT_1_17) {
                 event.player().sendPacket(new ConfirmTransaction((byte) clickWindow.windowId(), (short) clickWindow.actionNumber(), false));
